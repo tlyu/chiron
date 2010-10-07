@@ -81,7 +81,7 @@ def main():
             if fetcher:
                 if (zgram.opcode.lower() != 'auto' and
                     last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout):
-                    if zgram.cls == 'undebathena':
+                    if zgram.cls[:2] == 'un':
                         u, t = undebathena_fun()
                     else:
                         u, t = fetcher(ticket)
