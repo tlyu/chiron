@@ -88,7 +88,7 @@ def main():
                     if not t:
                         t = 'Unable to identify ticket %s' % ticket
                     messages.append('%s ticket %s: %s' % (tracker, ticket, t))
-                last_seen[(tracker, ticket, zgram.cls)] = time.time()
+                    last_seen[(tracker, ticket, zgram.cls)] = time.time()
         if messages:
             z = zephyr.ZNotice()
             z.cls = zgram.cls
