@@ -26,31 +26,38 @@ def build_matcher(regex, flags=0):
     return match
 
 matchers = (
-    ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)]),
-
-    ('Debathena', [build_matcher(r'#([0-9]{1,5})\b')])
+    ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'debathena' in m.cls),
+    ('Debathena', [build_matcher(r'#([0-9]{1,5})\b')], lambda m: 'debathena' in m.cls),
+    ('Debathena', [build_matcher(r'\bdebathena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Scripts', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
+    ('Scripts', [build_matcher(r'#([0-9]{1,5})\b')], lambda m: 'scripts' in m.cls),
+    ('Scripts', [build_matcher(r'\bscripts[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     )
 
-def fetch_debathena(ticket):
-    u = 'http://debathena.mit.edu/trac/ticket/%s' % ticket
-    f = urllib.urlopen(u)
-    t = etree.parse(f, parser)
-    title = t.xpath('string(//h2[@class])')
-    if title:
-        return u, title
-    else:
-        return u, None
+def fetch_trac(url):
+    def trac_fetcher(ticket):
+        u = '%s/ticket/%s' % (url, ticket)
+        f = urllib.urlopen(u)
+        t = etree.parse(f, parser)
+        title = t.xpath('string(//h2[@class])')
+        if title:
+            return u, title
+        else:
+            return u, None
+    return trac_fetcher
 
 fetchers = {
-    'Debathena': fetch_debathena,
+    'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
+    'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
     }
 
 def find_ticket_info(zgram):
-    for tracker, ms in matchers:
-        for m in ms:
-            ticket = m(zgram)
-            for t in ticket:
-                yield tracker, t
+    for tracker, ms, cond in matchers:
+        if cond(zgram):
+            for m in ms:
+                ticket = m(zgram)
+                for t in ticket:
+                    yield tracker, t
 
 def undebathena_fun():
     u = 'http://debathena.mit.edu/trac/wiki/PackageNamesWeDidntUse'
@@ -67,7 +74,9 @@ def main():
     subs = zephyr.Subscriptions()
     subs.add(('broder-test', '*', '*'))
     subs.add(('debathena', '*', '*'))
+    subs.add(('scripts', '*', '*'))
     subs.add(('undebathena', '*', '*'))
+    subs.add(('geofft', '*', '*'))
 
     while True:
         zgram = zephyr.receive(True)
