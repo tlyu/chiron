@@ -87,11 +87,9 @@ def undebathena_fun():
 def main():
     zephyr.init()
     subs = zephyr.Subscriptions()
-    subs.add(('broder-test', '*', '*'))
-    subs.add(('debathena', '*', '*'))
-    subs.add(('scripts', '*', '*'))
-    subs.add(('undebathena', '*', '*'))
-    subs.add(('geofft', '*', '*'))
+    for c in ['broder-test', 'debathena', 'scripts', 'undebathena',
+              'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed']:
+        subs.add((c, '*', '*'))
 
     while True:
         zgram = zephyr.receive(True)
