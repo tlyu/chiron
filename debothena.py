@@ -32,6 +32,7 @@ matchers = (
     ('Scripts', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
     ('Scripts', [build_matcher(r'#([0-9]{1,5})\b(?!-Ubuntu)')], lambda m: 'scripts' in m.cls),
     ('Scripts', [build_matcher(r'\bscripts[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
     )
 
 def fetch_trac(url):
@@ -46,9 +47,23 @@ def fetch_trac(url):
             return u, None
     return trac_fetcher
 
+def fetch_pokemon(ticket):
+    u = 'http://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number'
+    f = urllib.urlopen(u + '?action=raw')
+    for line in f:
+        if line[0:7] == '{{rdex|':
+            (id, name) = line.split('|')[2:4]
+            try:
+                if int(id) == int(ticket):
+                    return u, "%s (%s)" % (name, ", ".join(line.split('}')[0].split('|')[5:]))
+            except ValueError:
+                pass
+    return u, None
+
 fetchers = {
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
     'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
+    'Pokedex': fetch_pokemon,
     }
 
 def find_ticket_info(zgram):
