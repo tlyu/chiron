@@ -22,7 +22,7 @@ parser = etree.HTMLParser(encoding='UTF-8')
 def build_matcher(regex, flags=0):
     r = re.compile(regex, flags)
     def match(zgram):
-        return r.findall(zgram.fields[-1])
+        return r.findall(zgram.fields[1] if len(zgram.fields) > 1 else zgram.fields[0])
     return match
 
 matchers = (
