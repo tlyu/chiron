@@ -6,6 +6,7 @@ import time
 import sys
 from random import choice
 import os
+import json
 
 try:
     import zephyr
@@ -34,6 +35,7 @@ matchers = (
     ('Scripts', [build_matcher(r'\bscripts[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bscripts faq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bfaq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
+    ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,6})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls or 'zhangc' in m.cls),
     )
@@ -60,6 +62,15 @@ def fetch_scripts_faq(ticket):
     else:
         return u, None
 
+def fetch_launchpad(ticket):
+    u = 'http://api.launchpad.net/1.0/bugs/%s' % ticket
+    f = urllib.urlopen(u)
+    j = json.read(f.read())
+    try:
+        return j['web_link'], j['title']
+    except KeyError:
+        return u, None
+
 def fetch_pokemon(ticket):
     u = 'http://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number'
     f = urllib.urlopen(u + '?action=raw')
@@ -77,6 +88,7 @@ fetchers = {
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
     'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
     'Scripts FAQ': fetch_scripts_faq,
+    'Launchpad': fetch_launchpad,
     'Pokedex': fetch_pokemon,
     }
 
