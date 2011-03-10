@@ -106,6 +106,7 @@ def main():
         subs.add((c, '*', '*'))
 
     while True:
+      try:
         zgram = zephyr.receive(True)
         if not zgram:
             continue
@@ -134,6 +135,8 @@ def main():
             z.sender = 'debothena'
             z.fields = [u, '\n'.join(messages)]
             z.send()
+      except UnicodeDecodeError:
+        pass
 
 
 if __name__ == '__main__':
