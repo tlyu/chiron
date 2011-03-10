@@ -101,7 +101,7 @@ def undebathena_fun():
 def main():
     zephyr.init()
     subs = zephyr.Subscriptions()
-    for c in ['broder-test', 'debathena', 'scripts', 'undebathena',
+    for c in ['broder-test', 'debathena', 'sipb', 'scripts', 'undebathena',
               'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed']:
         subs.add((c, '*', '*'))
 
