@@ -33,6 +33,7 @@ matchers = (
     ('Scripts', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
     ('Scripts', [build_matcher(r'#([0-9]{1,5})\b(?!-Ubuntu)')], lambda m: 'scripts' in m.cls),
     ('Scripts', [build_matcher(r'\bscripts[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Barnowl', [build_matcher(r'\bbarnowl[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bscripts faq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bfaq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
     ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,6})\b', re.I)], lambda m: True),
@@ -87,6 +88,7 @@ def fetch_pokemon(ticket):
 fetchers = {
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
     'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
+    'Barnowl': fetch_trac('http://barnowl.mit.edu'),
     'Scripts FAQ': fetch_scripts_faq,
     'Launchpad': fetch_launchpad,
     'Pokedex': fetch_pokemon,
@@ -114,7 +116,8 @@ def main():
     zephyr.init()
     subs = zephyr.Subscriptions()
     for c in ['broder-test', 'debathena', 'sipb', 'scripts', 'undebathena',
-              'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed']:
+              'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed',
+              'barnowl']:
         subs.add((c, '*', '*'))
 
     while True:
