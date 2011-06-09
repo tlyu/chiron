@@ -39,6 +39,7 @@ matchers = (
     ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,6})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls or 'zhangc' in m.cls),
+    ('Assassin', [build_matcher(r'\bcombo\b', re.I)], lambda m: 'assassin' in m.cls),
     )
 
 def fetch_trac(url):
@@ -85,6 +86,13 @@ def fetch_pokemon(ticket):
                 pass
     return u, None
 
+def deal_with_assassin(ticket):
+    return ("NO COMBOS OVER ZEPHYR",
+"""DO @b(NOT) ASK FOR OR SEND THE OFFICE COMBO
+OVER ZEPHYR, EVEN PERSONAL ZEPHYR.
+Instead, look in /mit/assassin/Office. If you don't have access,
+ask to be added.""")
+
 fetchers = {
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
     'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
@@ -92,6 +100,7 @@ fetchers = {
     'Scripts FAQ': fetch_scripts_faq,
     'Launchpad': fetch_launchpad,
     'Pokedex': fetch_pokemon,
+    'Assassin': deal_with_assassin,
     }
 
 def find_ticket_info(zgram):
@@ -117,7 +126,7 @@ def main():
     subs = zephyr.Subscriptions()
     for c in ['broder-test', 'debathena', 'sipb', 'scripts', 'undebathena',
               'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed',
-              'barnowl']:
+              'barnowl', 'assassin']:
         subs.add((c, '*', '*'))
 
     while True:
