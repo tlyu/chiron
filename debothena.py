@@ -26,6 +26,14 @@ def build_matcher(regex, flags=0):
         return r.findall(zgram.fields[1] if len(zgram.fields) > 1 else zgram.fields[0])
     return match
 
+def instance_matcher(regex, flags=0):
+    r = re.compile(regex, flags)
+    def match(zgram):
+        if zgram.opcode.lower() == 'auto':
+            return []
+        return r.findall(zgram.instance)
+    return match
+
 matchers = (
     ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls),
     ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls),
