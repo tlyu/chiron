@@ -40,6 +40,7 @@ matchers = (
     ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls or 'zhangc' in m.cls),
     ('Assassin', [build_matcher(r'\bcombo\b', re.I)], lambda m: 'assassin' in m.cls),
+    ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
     )
 
 def fetch_trac(url):
@@ -93,6 +94,16 @@ OVER ZEPHYR, EVEN PERSONAL ZEPHYR.
 Instead, look in /mit/assassin/Office. If you don't have access,
 ask to be added.""")
 
+def invoke_science(ticket):
+    return ("SCIENCE!",
+"""
+  ____   ____ ___ _____ _   _  ____ _____
+ / ___| / ___|_ _| ____| \ | |/ ___| ____|
+ \___ \| |    | ||  _| |  \| | |   |  _|
+  ___) | |___ | || |___| |\  | |___| |___
+ |____/ \____|___|_____|_| \_|\____|_____|
+""")
+
 fetchers = {
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
     'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
@@ -101,6 +112,7 @@ fetchers = {
     'Launchpad': fetch_launchpad,
     'Pokedex': fetch_pokemon,
     'Assassin': deal_with_assassin,
+    'SCIENCE': invoke_science
     }
 
 def find_ticket_info(zgram):
@@ -126,7 +138,7 @@ def main():
     subs = zephyr.Subscriptions()
     for c in ['broder-test', 'debathena', 'sipb', 'scripts', 'undebathena',
               'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed',
-              'barnowl', 'assassin']:
+              'barnowl', 'assassin', 'axs']:
         subs.add((c, '*', '*'))
 
     while True:
