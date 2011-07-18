@@ -35,8 +35,8 @@ def instance_matcher(regex, flags=0):
     return match
 
 matchers = (
-    ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls),
-    ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls),
+    ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
+    ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
     ('Debathena', [build_matcher(r'\bdebathena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
     ('Scripts', [build_matcher(r'#([0-9]{1,5})\b(?!-Ubuntu)')], lambda m: 'scripts' in m.cls),
@@ -146,7 +146,7 @@ def main():
     subs = zephyr.Subscriptions()
     for c in ['broder-test', 'debathena', 'sipb', 'scripts', 'undebathena',
               'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed',
-              'barnowl', 'assassin', 'axs']:
+              'barnowl', 'assassin', 'axs', 'linerva']:
         subs.add((c, '*', '*'))
 
     while True:
