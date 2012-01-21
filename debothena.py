@@ -44,6 +44,10 @@ matchers = (
     ('Barnowl', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'barnowl' in m.cls),
     ('Barnowl', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'barnowl' in m.cls),
     ('Barnowl', [build_matcher(r'\bbarnowl[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('ASA', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'asa' in m.cls),
+    ('ASA', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'asa' in m.cls),
+    ('ASA', [build_matcher(r'\basa[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('SIPB', [build_matcher(r'\bsipb[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bscripts faq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bfaq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
     ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,6})\b', re.I)], lambda m: True),
@@ -118,6 +122,8 @@ fetchers = {
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
     'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
     'Barnowl': fetch_trac('http://barnowl.mit.edu'),
+    'ASA': fetch_trac('http://asa.mit.edu/trac'),
+    'SIPB': fetch_trac('http://sipb.mit.edu/trac'),
     'Scripts FAQ': fetch_scripts_faq,
     'Launchpad': fetch_launchpad,
     'Pokedex': fetch_pokemon,
@@ -148,7 +154,7 @@ def main():
     subs = zephyr.Subscriptions()
     for c in ['broder-test', 'debathena', 'sipb', 'scripts', 'undebathena',
               'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed',
-              'barnowl', 'assassin', 'axs', 'linerva']:
+              'barnowl', 'assassin', 'axs', 'linerva', 'asa']:
         subs.add((c, '*', '*'))
 
     while True:
