@@ -154,7 +154,7 @@ def main():
     subs = zephyr.Subscriptions()
     for c in ['broder-test', 'debathena', 'sipb', 'scripts', 'undebathena',
               'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed',
-              'barnowl', 'assassin', 'axs', 'linerva', 'asa']:
+              'barnowl', 'assassin', 'axs', 'linerva', 'asa', 'adehnert-test', ]:
         subs.add((c, '*', '*'))
 
     while True:
