@@ -156,6 +156,7 @@ def main():
               'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed',
               'barnowl', 'assassin', 'axs', 'linerva', 'asa', 'adehnert-test', ]:
         subs.add((c, '*', '*'))
+    subs.add(('message', '*', '%me%'))
 
     while True:
       try:
@@ -182,9 +183,13 @@ def main():
             z = zephyr.ZNotice()
             z.cls = zgram.cls
             z.instance = zgram.instance
-            z.recipient = zgram.recipient
+            if 'debothena' in zgram.recipient:
+                z.recipient = zgram.sender
+                z.sender = zgram.recipient
+            else:
+                z.recipient = zgram.recipient
+                z.sender = 'debothena'
             z.opcode = 'auto'
-            z.sender = 'debothena'
             z.fields = [u, '\n'.join(messages)]
             z.send()
       except UnicodeDecodeError:
