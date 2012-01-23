@@ -3,6 +3,7 @@ import re
 import urllib
 from lxml import etree
 import time
+import datetime
 import sys
 from random import choice
 import os
@@ -167,6 +168,7 @@ def main():
             sys.exit(0)
         messages = []
         for tracker, ticket in find_ticket_info(zgram):
+            print "Found ticket at %s: %s, %s" % (datetime.datetime.now(), tracker, ticket, )
             fetcher = fetchers.get(tracker)
             if fetcher:
                 if (zgram.opcode.lower() != 'auto' and
