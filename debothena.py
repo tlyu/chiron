@@ -86,7 +86,7 @@ def fetch_scripts_faq(ticket):
 def fetch_launchpad(ticket):
     u = 'http://api.launchpad.net/1.0/bugs/%s' % ticket
     f = urllib.urlopen(u)
-    j = json.read(f.read())
+    j = json.load(f)
     try:
         return j['web_link'], j['title']
     except KeyError:
