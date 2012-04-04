@@ -99,7 +99,6 @@ def fetch_github(user, repo, ):
         u = 'http://github.com/api/v2/json/issues/show/%s/%s/%s' % (user, repo, ticket, )
         f = urllib.urlopen(u)
         j = json.load(f)
-        print j
         try:
             issue = j['issue']
             return issue['html_url'], issue['title']
