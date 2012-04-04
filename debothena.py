@@ -92,6 +92,19 @@ def fetch_launchpad(ticket):
     except KeyError:
         return u, None
 
+def fetch_github(user, repo, ):
+    def fetch(ticket):
+        u = 'http://github.com/api/v2/json/issues/show/%s/%s/%s' % (user, repo, ticket, )
+        f = urllib.urlopen(u)
+        j = json.load(f)
+        print j
+        try:
+            issue = j['issue']
+            return issue['html_url'], issue['title']
+        except KeyError:
+            return u, None
+    return fetch
+
 def fetch_pokemon(ticket):
     u = 'http://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number'
     f = urllib.urlopen(u + '?action=raw')
