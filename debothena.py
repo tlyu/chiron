@@ -199,7 +199,8 @@ def main():
         if zgram.opcode.lower() == 'kill':
             sys.exit(0)
         messages = []
-        for tracker, ticket in find_ticket_info(zgram):
+        tickets = find_ticket_info(zgram)
+        for tracker, ticket in tickets:
             print "Found ticket at %s: %s, %s" % (datetime.datetime.now(), tracker, ticket, )
             fetcher = fetchers.get(tracker)
             if fetcher:
@@ -211,8 +212,10 @@ def main():
                         u, t = fetcher(ticket)
                     if not t:
                         t = 'Unable to identify ticket %s' % ticket
-                    messages.append('%s ticket %s: %s' % (tracker, ticket, t))
+                    message = '%s ticket %s: %s' % (tracker, ticket, t)
+                    messages.append((message, u))
                     last_seen[(tracker, ticket, zgram.cls)] = time.time()
+        send_url = (len(messages) > 1)
         if messages:
             z = zephyr.ZNotice()
             z.cls = zgram.cls
@@ -224,7 +227,11 @@ def main():
                 z.recipient = zgram.recipient
                 z.sender = 'debothena'
             z.opcode = 'auto'
-            z.fields = [u, '\n'.join(messages)]
+            if send_url:
+                body = '\n'.join(["%s (%s)" % pair for pair in messages])
+            else:
+                body = '\n'.join([m for m, url in messages])
+            z.fields = [u, body]
             z.send()
       except UnicodeDecodeError:
         pass
