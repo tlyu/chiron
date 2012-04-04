@@ -49,6 +49,8 @@ matchers = (
     ('ASA', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'asa' in m.cls),
     ('ASA', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'asa' in m.cls),
     ('ASA', [build_matcher(r'\basa[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('ESP', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'esp' in m.cls),
+    ('ESP', [build_matcher(r'\besp[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('SIPB', [build_matcher(r'\bsipb[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bscripts faq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bfaq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
@@ -155,6 +157,7 @@ fetchers = {
     'Assassin': deal_with_assassin,
     'SCIENCE': invoke_science,
     'Debothena': invoke_debothena,
+    'ESP': fetch_github('learning-unlimited', 'ESP-Website'),
     }
 
 def find_ticket_info(zgram):
@@ -180,7 +183,7 @@ def main():
     subs = zephyr.Subscriptions()
     for c in ['broder-test', 'debathena', 'sipb', 'scripts', 'undebathena',
               'geofft', 'geofft-test', 'lizdenys', 'zhangc', 'jdreed',
-              'barnowl', 'assassin', 'axs', 'linerva', 'asa', 'adehnert-test', ]:
+              'barnowl', 'assassin', 'axs', 'linerva', 'asa', 'adehnert-test', 'esp', ]:
         subs.add((c, '*', '*'))
     subs.add(('message', '*', '%me%'))
 
