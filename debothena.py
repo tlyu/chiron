@@ -227,7 +227,7 @@ def main():
                 z.sender = zgram.recipient
             else:
                 z.recipient = zgram.recipient
-                z.sender = 'debothena'
+                #z.sender = 'debothena'
             z.opcode = 'auto'
             if send_url:
                 body = '\n'.join(["%s (%s)" % pair for pair in messages])
