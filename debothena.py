@@ -38,6 +38,7 @@ def instance_matcher(regex, flags=0):
 
 matchers = (
     ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,6})\b', re.I)], lambda m: True),
+    ('Debian', [build_matcher(r'\bdebian[-\s:]#([0-9]{4,6})\b', re.I)], lambda m: True),
     ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
     ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
     ('Debathena', [build_matcher(r'\bdebathena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
@@ -95,6 +96,18 @@ def fetch_launchpad(ticket):
     except KeyError:
         return u, None
 
+def fetch_debbugs(url):
+    def debbugs_fetcher(ticket):
+        u = '%s/cgi-bin/bugreport.cgi?bug=%s' % (url, ticket)
+        f = urllib.urlopen(u)
+        t = etree.parse(f, parser)
+        title = t.xpath('normalize-space(//h1/child::text()[2])')
+        if title:
+            return u, title
+        else:
+            return u, None
+    return debbugs_fetcher
+
 def fetch_github(user, repo, ):
     def fetch(ticket):
         u = 'http://github.com/api/v2/json/issues/show/%s/%s/%s' % (user, repo, ticket, )
@@ -147,6 +160,7 @@ u"""
 
 fetchers = {
     'Launchpad': fetch_launchpad,
+    'Debian': fetch_debbugs('http://bugs.debian.org'),
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
     'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
     'Barnowl': fetch_trac('http://barnowl.mit.edu'),
