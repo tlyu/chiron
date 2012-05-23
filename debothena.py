@@ -59,6 +59,7 @@ matchers = (
     ('ESP', [build_matcher(r'\besp[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls or 'zhangc' in m.cls),
+    ('MIT Class', [build_matcher(r'class ([0-9a-z]{1,3}[.][0-9]{1,4})\b', re.I)], lambda m: True),
     ('Assassin', [build_matcher(r'\bcombo\b', re.I)], lambda m: 'assassin' in m.cls),
     ('Assassin', [build_matcher(r'\bcombination\b', re.I)], lambda m: 'assassin' in m.cls),
     ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
@@ -133,6 +134,16 @@ def fetch_pokemon(ticket):
                 pass
     return u, None
 
+def fetch_mit_class(ticket):
+    u = 'http://student.mit.edu/catalog/search.cgi?search=%s' % (ticket, )
+    f = urllib.urlopen(u)
+    t = etree.parse(f, parser)
+    title = t.xpath('string(//h3)')
+    if title:
+        return u, title
+    else:
+        return u, None
+
 def deal_with_assassin(ticket):
     return ("NO COMBOS OVER ZEPHYR",
 """DO @b(NOT) ASK FOR OR SEND THE OFFICE COMBO
@@ -170,6 +181,7 @@ fetchers = {
     'ASA': fetch_trac('http://asa.mit.edu/trac'),
     'ESP': fetch_github('learning-unlimited', 'ESP-Website'),
     'Pokedex': fetch_pokemon,
+    'MIT Class': fetch_mit_class,
     'Assassin': deal_with_assassin,
     'SCIENCE': invoke_science,
     'Debothena': invoke_debothena,
