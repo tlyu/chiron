@@ -36,6 +36,9 @@ def instance_matcher(regex, flags=0):
         return r.findall(zgram.instance)
     return match
 
+def is_personal(zgram):
+    return bool(zgram.recipient)
+
 matchers = (
     ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,6})\b', re.I)], lambda m: True),
     ('Debian', [build_matcher(r'\bdebian[-\s:]#([0-9]{4,6})\b', re.I)], lambda m: True),
@@ -60,6 +63,8 @@ matchers = (
     ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls or 'zhangc' in m.cls),
     ('MIT Class', [build_matcher(r'class ([0-9a-z]{1,3}[.][0-9]{1,4})\b', re.I)], lambda m: True),
+    ('MIT Class', [build_matcher(r"what's ([0-9a-z]{1,3}[.][0-9]{1,4})?\b", re.I)], lambda m: True),
+    ('MIT Class', [build_matcher(r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', re.I)], is_personal),
     ('Assassin', [build_matcher(r'\bcombo\b', re.I)], lambda m: 'assassin' in m.cls),
     ('Assassin', [build_matcher(r'\bcombination\b', re.I)], lambda m: 'assassin' in m.cls),
     ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
