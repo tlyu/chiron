@@ -274,6 +274,8 @@ def main():
                     message = '%s ticket %s: %s' % (tracker, ticket, t)
                     messages.append((message, u))
                     last_seen[(tracker, ticket, zgram.cls)] = time.time()
+            else:
+                print "Fetcher %s not found" % (tracker, )
         send_url = (len(messages) > 1)
         if messages:
             z = zephyr.ZNotice()
