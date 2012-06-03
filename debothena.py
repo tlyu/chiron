@@ -45,6 +45,7 @@ matchers = (
     ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
     ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
     ('Debathena', [build_matcher(r'\bdebathena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('RHBZ', [build_matcher(r'\bRHBZ[-\s:]#([0-9]{4,7})\b', re.I)], lambda m: True),
     ('Scripts', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
     ('Scripts', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'scripts' in m.cls),
     ('Scripts', [build_matcher(r'\bscripts[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
@@ -70,6 +71,18 @@ matchers = (
     ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
     ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     )
+
+def fetch_bugzilla(url):
+    def bugzilla_fetcher(ticket):
+        u = '%s/show_bug.cgi?id=%s' % (url, ticket)
+        f = urllib.urlopen(u)
+        t = etree.parse(f, parser)
+        title = t.xpath('string(//span[@id="short_desc_nonedit_display"])')
+        if title:
+            return u, title
+        else:
+            return u, None
+    return bugzilla_fetcher
 
 def fetch_trac(url):
     def trac_fetcher(ticket):
@@ -178,6 +191,7 @@ fetchers = {
     'Launchpad': fetch_launchpad,
     'Debian': fetch_debbugs('http://bugs.debian.org'),
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
+    'RHBZ': fetch_bugzilla('https://bugzilla.redhat.com'),
     'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
     'Barnowl': fetch_trac('http://barnowl.mit.edu'),
     'Mosh': fetch_github('keithw', 'mosh'),
