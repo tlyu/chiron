@@ -73,16 +73,6 @@ matchers = (
     ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     )
 
-def fetch_cve(ticket):
-    u = 'http://cve.mitre.org/cgi-bin/cvename.cgi?name=%s' % ticket
-    f = urllib.urlopen(u)
-    t = etree.parse(f, parser)
-    title = t.xpath('string(//tr[th="Description"]/following::tr[1])')
-    if title:
-        return u, "\n" + title.strip() + "\n"
-    else:
-        return u, None
-
 def fetch_bugzilla(url):
     def bugzilla_fetcher(ticket):
         u = '%s/show_bug.cgi?id=%s' % (url, ticket)
@@ -106,6 +96,23 @@ def fetch_trac(url):
         else:
             return u, None
     return trac_fetcher
+
+fetch_cve_rhbz = fetch_bugzilla("https://bugzilla.redhat.com")
+def fetch_cve(ticket):
+    # Try fetching from RHBZ first, since it tends to be better
+    url, title = fetch_cve_rhbz(ticket)
+    print "RHBZ url='%s' title='%s'" % (url, title)
+    if title:
+        return url, "[RHBZ] " + title
+
+    u = 'http://cve.mitre.org/cgi-bin/cvename.cgi?name=%s' % ticket
+    f = urllib.urlopen(u)
+    t = etree.parse(f, parser)
+    title = t.xpath('string(//tr[th="Description"]/following::tr[1])')
+    if title:
+        return u, "\n" + title.strip() + "\n"
+    else:
+        return u, None
 
 def fetch_scripts_faq(ticket):
     u = 'http://scripts.mit.edu/faq/%s' % ticket
