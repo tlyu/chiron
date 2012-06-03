@@ -73,6 +73,8 @@ matchers = (
     ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     )
 
+# Generic fetchers (parametrizable by site)
+
 def fetch_bugzilla(url):
     def bugzilla_fetcher(ticket):
         u = '%s/show_bug.cgi?id=%s' % (url, ticket)
@@ -96,6 +98,20 @@ def fetch_trac(url):
         else:
             return u, None
     return trac_fetcher
+
+def fetch_github(user, repo, ):
+    def fetch(ticket):
+        u = 'http://github.com/api/v2/json/issues/show/%s/%s/%s' % (user, repo, ticket, )
+        f = urllib.urlopen(u)
+        j = json.load(f)
+        try:
+            issue = j['issue']
+            return issue['html_url'], issue['title']
+        except KeyError:
+            return u, None
+    return fetch
+
+# Project-specific fetchers
 
 fetch_cve_rhbz = fetch_bugzilla("https://bugzilla.redhat.com")
 def fetch_cve(ticket):
@@ -145,18 +161,6 @@ def fetch_debbugs(url):
             return u, None
     return debbugs_fetcher
 
-def fetch_github(user, repo, ):
-    def fetch(ticket):
-        u = 'http://github.com/api/v2/json/issues/show/%s/%s/%s' % (user, repo, ticket, )
-        f = urllib.urlopen(u)
-        j = json.load(f)
-        try:
-            issue = j['issue']
-            return issue['html_url'], issue['title']
-        except KeyError:
-            return u, None
-    return fetch
-
 def fetch_pokemon(ticket):
     u = 'http://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number'
     f = urllib.urlopen(u + '?action=raw')
@@ -179,6 +183,8 @@ def fetch_mit_class(ticket):
         return u, title
     else:
         return u, None
+
+# Special constant-text fetchers
 
 def deal_with_assassin(ticket):
     return ("NO COMBOS OVER ZEPHYR",
