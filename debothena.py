@@ -40,6 +40,7 @@ def is_personal(zgram):
     return bool(zgram.recipient)
 
 matchers = (
+    ('CVE', [build_matcher(r'\b(CVE-[0-9]{4}-[0-9]{4})\b', re.I)], lambda m: True),
     ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,6})\b', re.I)], lambda m: True),
     ('Debian', [build_matcher(r'\bdebian[-\s:]#([0-9]{4,6})\b', re.I)], lambda m: True),
     ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
@@ -71,6 +72,16 @@ matchers = (
     ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
     ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     )
+
+def fetch_cve(ticket):
+    u = 'http://cve.mitre.org/cgi-bin/cvename.cgi?name=%s' % ticket
+    f = urllib.urlopen(u)
+    t = etree.parse(f, parser)
+    title = t.xpath('string(//tr[th="Description"]/following::tr[1])')
+    if title:
+        return u, "\n" + title.strip() + "\n"
+    else:
+        return u, None
 
 def fetch_bugzilla(url):
     def bugzilla_fetcher(ticket):
@@ -188,6 +199,7 @@ u"""
 """)
 
 fetchers = {
+    'CVE': fetch_cve,
     'Launchpad': fetch_launchpad,
     'Debian': fetch_debbugs('http://bugs.debian.org'),
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
