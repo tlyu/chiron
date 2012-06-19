@@ -64,7 +64,7 @@ matchers = (
     ('ESP', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'esp' in m.cls),
     ('ESP', [build_matcher(r'\besp[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
-    ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls or 'zhangc' in m.cls),
+    ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls),
     ('MIT Class', [build_matcher(r'class ([0-9a-z]{1,3}[.][0-9]{1,4})\b', re.I)], lambda m: True),
     ('MIT Class', [build_matcher(r"what's ([0-9a-z]{1,3}[.][0-9]{1,4})\?\b", re.I)], lambda m: True),
     ('MIT Class', [build_matcher(r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', re.I)], is_personal),
@@ -258,7 +258,7 @@ def main():
         'broder-test', 'geofft-test', 'adehnert-test',
         'linerva', 'debathena', 'undebathena',
         'sipb', 'scripts', 'barnowl',
-        'geofft', 'lizdenys', 'zhangc', 'jdreed', 'axs', 'adehnert',
+        'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert',
         'assassin',
         'asa', 'esp',
     ]:
