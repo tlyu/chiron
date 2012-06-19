@@ -258,7 +258,7 @@ def main():
         'broder-test', 'geofft-test', 'adehnert-test',
         'linerva', 'debathena', 'undebathena',
         'sipb', 'scripts', 'barnowl',
-        'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert',
+        'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya',
         'assassin',
         'asa', 'esp',
     ]:
