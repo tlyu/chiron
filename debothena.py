@@ -42,7 +42,7 @@ def is_personal(zgram):
 matchers = (
     ('CVE', [build_matcher(r'\b(CVE-[0-9]{4}-[0-9]{4})\b', re.I)], lambda m: True),
     ('Django', [build_matcher(r'\bdjango[-\s:]*#([0-9]{3,5})\b', re.I)], lambda m: True),
-    ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,6})\b', re.I)], lambda m: True),
+    ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,8})\b', re.I)], lambda m: True),
     ('Debian', [build_matcher(r'\bdebian[-\s:]#([0-9]{4,6})\b', re.I)], lambda m: True),
     ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
     ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
