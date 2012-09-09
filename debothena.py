@@ -47,6 +47,7 @@ matchers = (
     ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
     ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls or 'linerva' in m.cls),
     ('Debathena', [build_matcher(r'\bdebathena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('RHBZ', [build_matcher(r'\bRHBZ[-\s:]#([0-9]{4,7})\b', re.I)], lambda m: True),
     ('Scripts', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
     ('Scripts', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'scripts' in m.cls),
@@ -71,7 +72,7 @@ matchers = (
     ('Assassin', [build_matcher(r'\bcombo\b', re.I)], lambda m: 'assassin' in m.cls),
     ('Assassin', [build_matcher(r'\bcombination\b', re.I)], lambda m: 'assassin' in m.cls),
     ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
-    ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Debothena Test', [build_matcher(r'\bdebothena test[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     )
 
 # Generic fetchers (parametrizable by site)
@@ -217,6 +218,7 @@ fetchers = {
     'Launchpad': fetch_launchpad,
     'Debian': fetch_debbugs('http://bugs.debian.org'),
     'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
+    'Debothena': fetch_github('sipb', 'debothena'),
     'RHBZ': fetch_bugzilla('https://bugzilla.redhat.com'),
     'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
     'Barnowl': fetch_trac('http://barnowl.mit.edu'),
@@ -229,7 +231,7 @@ fetchers = {
     'MIT Class': fetch_mit_class,
     'Assassin': deal_with_assassin,
     'SCIENCE': invoke_science,
-    'Debothena': invoke_debothena,
+    'Debothena Test': invoke_debothena,
     }
 
 def find_ticket_info(zgram):
