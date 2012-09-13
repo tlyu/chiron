@@ -20,12 +20,16 @@ except ImportError:
 
 last_seen = {}
 seen_timeout = 5 * 60
+default_realm = 'ATHENA.MIT.EDU'
 parser = etree.HTMLParser(encoding='UTF-8')
+
+def zbody(zgram):
+    return zgram.fields[1] if len(zgram.fields) > 1 else zgram.fields[0]
 
 def build_matcher(regex, flags=0):
     r = re.compile(regex, flags)
     def match(zgram):
-        return r.findall(zgram.fields[1] if len(zgram.fields) > 1 else zgram.fields[0])
+        return r.findall(zbody(zgram))
     return match
 
 def instance_matcher(regex, flags=0):
@@ -255,6 +259,21 @@ def undebathena_fun():
     file = choice(os.listdir(dir))
     return u, "%s should divert %s/%s" % (package, dir, file)
 
+def strip_default_realm(principal):
+    if '@' in principal:
+        user, domain = principal.split('@')
+        if domain == default_realm:
+            return user
+    return principal
+
+def add_default_realm(principal):
+    if '@' in principal:
+        return principal
+    else:
+        return "%s@%s" % (principal, default_realm, )
+
+cc_re = re.compile(r"CC:(?P<recips>( [a-z./@]+)+) *$", re.MULTILINE)
+
 def main():
     zephyr.init()
     subs = zephyr.Subscriptions()
@@ -268,6 +287,7 @@ def main():
     ]:
         subs.add((c, '*', '*'))
     subs.add(('message', '*', '%me%'))
+    print "Listening..."
 
     while True:
       try:
@@ -279,7 +299,7 @@ def main():
         messages = []
         tickets = find_ticket_info(zgram)
         for tracker, ticket in tickets:
-            print "Found ticket at %s: %s, %s" % (datetime.datetime.now(), tracker, ticket, )
+            print "Found ticket at %s on -c %s: %s, %s" % (datetime.datetime.now(), zgram.cls, tracker, ticket, )
             fetcher = fetchers.get(tracker)
             if fetcher:
                 if (zgram.opcode.lower() != 'auto' and
@@ -300,19 +320,31 @@ def main():
             z = zephyr.ZNotice()
             z.cls = zgram.cls
             z.instance = zgram.instance
+            recipients = set()
             if 'debothena' in zgram.recipient:
-                z.recipient = zgram.sender
+                recipients.add(zgram.sender)
+                cc = cc_re.match(zbody(zgram))
+                if cc:
+                    cc_recips = cc.group('recips').split(' ')
+                    for cc_recip in cc_recips:
+                        if cc_recip and 'debothena' not in cc_recip:
+                            recipients.add(add_default_realm(cc_recip.strip()))
                 z.sender = zgram.recipient
             else:
-                z.recipient = zgram.recipient
-                #z.sender = 'debothena'
+                recipients.add(zgram.recipient)
             z.opcode = 'auto'
             if send_url:
                 body = '\n'.join(["%s (%s)" % pair for pair in messages])
             else:
                 body = '\n'.join([m for m, url in messages])
+            if len(recipients) > 1:
+                cc_line = " ".join([strip_default_realm(r) for r in recipients])
+                body = "CC: %s\n%s" % (cc_line, body)
             z.fields = [u, body]
-            z.send()
+            print "  -> Reply to: %s" % (recipients, )
+            for recipient in recipients:
+                z.recipient = recipient
+                z.send()
       except UnicodeDecodeError:
         pass
 
