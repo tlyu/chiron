@@ -326,6 +326,7 @@ def main():
             z = zephyr.ZNotice()
             z.cls = zgram.cls
             z.instance = zgram.instance
+            z.format = "http://zephyr.1ts.org/wiki/df"
             recipients = set()
             if 'debothena' in zgram.recipient:
                 recipients.add(zgram.sender)
