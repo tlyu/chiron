@@ -200,38 +200,67 @@ u"""
 # Declarations of MATCHERS and FETCHERS #
 #########################################
 
-matchers = (
+class MatchEngine(object):
+    def __init__(self, ):
+        self.matchers = []
+        self.fetchers = {}
+
+    def add_fetchers(self, fetchers):
+        for name, fetcher in fetchers.items():
+            assert name not in self.fetchers
+            self.fetchers[name] = fetcher
+
+    def add_matchers(self, matchers):
+        for matcher in matchers:
+            assert matcher[0] in self.fetchers
+        self.matchers.extend(matchers)
+
+    def add_trac(self, name, url, classes=None):
+        lname = name.lower()
+        if classes is None:
+            classes = [lname]
+        assert name not in self.fetchers
+        self.fetchers[name] = fetch_trac(url)
+        trac_matchers = [
+            (name, [build_matcher(r'\b%s[-\s:]*#([0-9]{1,5})\b' % (lname, ), re.I)], lambda m: True),
+        ]
+        for cls in classes:
+            trac_matchers.extend([
+                (name, [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: cls in m.cls),
+                # The "-Ubuntu" bit ignores any "uname -a" snippets that might get zephyred
+                (name, [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: cls in m.cls),
+            ])
+        self.matchers.extend(trac_matchers)
+
+match_engine = MatchEngine()
+
+match_engine.add_fetchers({
+    'CVE': fetch_cve,
+    'Launchpad': fetch_launchpad,
+    'Debian': fetch_debbugs('http://bugs.debian.org'),
+    'Debothena': fetch_github('sipb', 'debothena'),
+    'RHBZ': fetch_bugzilla('https://bugzilla.redhat.com'),
+    'pag-screen': fetch_github('sipb', 'pag-screen'),
+    'Mosh': fetch_github('keithw', 'mosh'),
+    'Scripts FAQ': fetch_scripts_faq,
+    'ESP': fetch_github('learning-unlimited', 'ESP-Website'),
+    'Pokedex': fetch_pokemon,
+    'MIT Class': fetch_mit_class,
+    'Assassin': deal_with_assassin,
+    'SCIENCE': invoke_science,
+    'Debothena Test': invoke_debothena,
+    })
+
+match_engine.add_matchers((
     ('CVE', [build_matcher(r'\b(CVE-[0-9]{4}-[0-9]{4})\b', re.I)], lambda m: True),
-    ('Django', [build_matcher(r'\bdjango[-\s:]*#([0-9]{3,5})\b', re.I)], lambda m: True),
     ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,8})\b', re.I)], lambda m: True),
     ('Debian', [build_matcher(r'\bdebian[-\s:]#([0-9]{4,6})\b', re.I)], lambda m: True),
-    ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls or 'linerva' in m.cls or 'jdreed' in m.cls),
-    ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls or 'linerva' in m.cls or 'jdreed' in m.cls),
-    ('Debathena', [build_matcher(r'\bdebathena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('RHBZ', [build_matcher(r'\bRHBZ[-\s:]#([0-9]{4,7})\b', re.I)], lambda m: True),
-    ('Scripts', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
-    ('Scripts', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'scripts' in m.cls),
-    ('Scripts', [build_matcher(r'\bscripts[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Barnowl', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'barnowl' in m.cls),
-    ('Barnowl', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'barnowl' in m.cls),
-    ('Barnowl', [build_matcher(r'\bbarnowl[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Zephyr', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'zephyr-dev' in m.cls),
-    ('Zephyr', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'zephyr-dev' in m.cls),
-    ('Zephyr', [build_matcher(r'\bzephyr[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('pag-screen', [build_matcher(r'\bpag-screen[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('XVM', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'xvm' in m.cls),
-    ('XVM', [build_matcher(r'\bxvm[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Mosh', [build_matcher(r'\bmosh[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('SIPB', [build_matcher(r'\bsipb[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bscripts faq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bfaq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
-    ('Remit', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'remit' in m.cls),
-    ('Remit', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'remit' in m.cls),
-    ('Remit', [build_matcher(r'\bremit[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('ASA', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'asa' in m.cls),
-    ('ASA', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'asa' in m.cls),
-    ('ASA', [build_matcher(r'\basa[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('ESP', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'esp' in m.cls),
     ('ESP', [build_matcher(r'\besp[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
@@ -243,36 +272,25 @@ matchers = (
     ('Assassin', [build_matcher(r'\bcombination\b', re.I)], lambda m: 'assassin' in m.cls),
     ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
     ('Debothena Test', [build_matcher(r'\bdebothena test[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    )
+    ))
 
-fetchers = {
-    'CVE': fetch_cve,
-    'Django': fetch_trac('https://code.djangoproject.com'),
-    'Launchpad': fetch_launchpad,
-    'Debian': fetch_debbugs('http://bugs.debian.org'),
-    'Debathena': fetch_trac('http://debathena.mit.edu/trac'),
-    'Debothena': fetch_github('sipb', 'debothena'),
-    'RHBZ': fetch_bugzilla('https://bugzilla.redhat.com'),
-    'Scripts': fetch_trac('http://scripts.mit.edu/trac'),
-    'XVM': fetch_trac('http://xvm.scripts.mit.edu/trac'),
-    'Barnowl': fetch_trac('http://barnowl.mit.edu'),
-    'Zephyr': fetch_trac('http://zephyr.1ts.org'),
-    'pag-screen': fetch_github('sipb', 'pag-screen'),
-    'Mosh': fetch_github('keithw', 'mosh'),
-    'SIPB': fetch_trac('http://sipb.mit.edu/trac'),
-    'Scripts FAQ': fetch_scripts_faq,
-    'Remit': fetch_trac('http://remit.scripts.mit.edu/trac'),
-    'ASA': fetch_trac('http://asa.mit.edu/trac'),
-    'ESP': fetch_github('learning-unlimited', 'ESP-Website'),
-    'Pokedex': fetch_pokemon,
-    'MIT Class': fetch_mit_class,
-    'Assassin': deal_with_assassin,
-    'SCIENCE': invoke_science,
-    'Debothena Test': invoke_debothena,
-    }
+match_engine.add_trac('Django', 'https://code.djangoproject.com', classes=[])
+match_engine.add_trac('Debathena', 'http://debathena.mit.edu/trac', )
+match_engine.add_trac('Scripts', 'http://scripts.mit.edu/trac', )
+match_engine.add_trac('XVM', 'http://xvm.scripts.mit.edu/trac', )
+match_engine.add_trac('Barnowl', 'http://barnowl.mit.edu', )
+match_engine.add_trac('Zephyr', 'http://zephyr.1ts.org', classes=['zephyr-dev'])
+match_engine.add_trac('SIPB', 'http://sipb.mit.edu/trac', )
+match_engine.add_trac('Remit', 'http://remit.scripts.mit.edu/trac', )
+match_engine.add_trac('ASA', 'http://asa.mit.edu/trac', )
+
+
+#############
+# CORE CODE #
+#############
 
 def find_ticket_info(zgram):
-    for tracker, ms, cond in matchers:
+    for tracker, ms, cond in match_engine.matchers:
         if cond(zgram):
             for m in ms:
                 ticket = m(zgram)
@@ -320,7 +338,7 @@ def main():
         tickets = find_ticket_info(zgram)
         for tracker, ticket in tickets:
             print "Found ticket at %s on -c %s: %s, %s" % (datetime.datetime.now(), zgram.cls, tracker, ticket, )
-            fetcher = fetchers.get(tracker)
+            fetcher = match_engine.fetchers.get(tracker)
             if fetcher:
                 if (zgram.opcode.lower() != 'auto' and
                     last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout):
