@@ -388,9 +388,15 @@ def main():
             continue
         if zgram.opcode.lower() == 'kill':
             sys.exit(0)
+        orig_class = False
+        if "-test" in zgram.cls:
+            orig_class = zgram.cls
+            zgram.cls = zgram.instance
         tickets = find_ticket_info(zgram)
         messages = format_tickets(last_seen, zgram, tickets)
         if messages:
+            if orig_class:
+                zgram.cls = orig_class
             send_response(zgram, messages)
       except UnicodeDecodeError:
         pass
