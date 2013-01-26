@@ -231,6 +231,14 @@ class MatchEngine(object):
             ])
         self.matchers.extend(trac_matchers)
 
+    def find_ticket_info(self, zgram):
+        for tracker, ms, cond in self.matchers:
+            if cond(zgram):
+                for m in ms:
+                    ticket = m(zgram)
+                    for t in ticket:
+                        yield tracker, self.fetchers[tracker], t
+
 match_engine = MatchEngine()
 
 match_engine.add_fetchers({
@@ -288,14 +296,6 @@ match_engine.add_trac('ASA', 'http://asa.mit.edu/trac', )
 # CORE CODE #
 #############
 
-def find_ticket_info(zgram):
-    for tracker, ms, cond in match_engine.matchers:
-        if cond(zgram):
-            for m in ms:
-                ticket = m(zgram)
-                for t in ticket:
-                    yield tracker, t
-
 def strip_default_realm(principal):
     if '@' in principal:
         user, domain = principal.split('@')
@@ -327,23 +327,19 @@ cc_re = re.compile(r"CC:(?P<recips>( [a-z./@]+)+) *$", re.MULTILINE)
 
 def format_tickets(last_seen, zgram, tickets):
     messages = []
-    for tracker, ticket in tickets:
+    for tracker, fetcher, ticket in tickets:
         print "Found ticket at %s on -c %s: %s, %s" % (datetime.datetime.now(), zgram.cls, tracker, ticket, )
-        fetcher = match_engine.fetchers.get(tracker)
-        if fetcher:
-            if (zgram.opcode.lower() != 'auto' and
-                last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout):
-                if zgram.cls[:2] == 'un':
-                    u, t = undebathena_fun()
-                else:
-                    u, t = fetcher(ticket)
-                if not t:
-                    t = 'Unable to identify ticket %s' % ticket
-                message = '%s ticket %s: %s' % (tracker, ticket, t)
-                messages.append((message, u))
-                last_seen[(tracker, ticket, zgram.cls)] = time.time()
-        else:
-            print "Fetcher %s not found" % (tracker, )
+        if (zgram.opcode.lower() != 'auto' and
+            last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout):
+            if zgram.cls[:2] == 'un':
+                u, t = undebathena_fun()
+            else:
+                u, t = fetcher(ticket)
+            if not t:
+                t = 'Unable to identify ticket %s' % ticket
+            message = '%s ticket %s: %s' % (tracker, ticket, t)
+            messages.append((message, u))
+            last_seen[(tracker, ticket, zgram.cls)] = time.time()
     return messages
 
 def send_response(zgram, messages):
@@ -392,7 +388,7 @@ def main():
         if "-test" in zgram.cls:
             orig_class = zgram.cls
             zgram.cls = zgram.instance
-        tickets = find_ticket_info(zgram)
+        tickets = match_engine.find_ticket_info(zgram)
         messages = format_tickets(last_seen, zgram, tickets)
         if messages:
             if orig_class:
