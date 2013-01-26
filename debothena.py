@@ -242,65 +242,6 @@ class MatchEngine(object):
                     for t in ticket:
                         yield tracker, self.fetchers[tracker], t
 
-match_engine = MatchEngine()
-
-match_engine.add_classes([
-        'broder-test', 'geofft-test', 'adehnert-test',
-        'linerva', 'debathena', 'undebathena',
-        'sipb', 'scripts', 'barnowl', 'zephyr-dev', 'xvm',
-        'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya', 'kcr', 'jesus', 'nelhage',
-        'assassin',
-        'remit', 'asa', 'esp',
-    ])
-
-match_engine.add_fetchers({
-    'CVE': fetch_cve,
-    'Launchpad': fetch_launchpad,
-    'Debian': fetch_debbugs('http://bugs.debian.org'),
-    'Debothena': fetch_github('sipb', 'debothena'),
-    'RHBZ': fetch_bugzilla('https://bugzilla.redhat.com'),
-    'pag-screen': fetch_github('sipb', 'pag-screen'),
-    'Mosh': fetch_github('keithw', 'mosh'),
-    'Scripts FAQ': fetch_scripts_faq,
-    'ESP': fetch_github('learning-unlimited', 'ESP-Website'),
-    'Pokedex': fetch_pokemon,
-    'MIT Class': fetch_mit_class,
-    'Assassin': deal_with_assassin,
-    'SCIENCE': invoke_science,
-    'Debothena Test': invoke_debothena,
-    })
-
-match_engine.add_matcher('CVE',         r'\b(CVE-[0-9]{4}-[0-9]{4})\b')
-match_engine.add_matcher('Launchpad',   r'\blp[-\s:]*#([0-9]{4,8})\b')
-match_engine.add_matcher('Debian',      r'\bdebian[-\s:]#([0-9]{4,6})\b')
-match_engine.add_matcher('Debothena',   r'\bdebothena[-\s:]*#([0-9]{1,5})\b')
-match_engine.add_matcher('RHBZ',        r'\bRHBZ[-\s:]#([0-9]{4,7})\b')
-match_engine.add_matcher('pag-screen',  r'\bpag-screen[-\s:]*#([0-9]{1,5})\b')
-match_engine.add_matcher('Mosh',        r'\bmosh[-\s:]*#([0-9]{1,5})\b')
-match_engine.add_matcher('Scripts FAQ', r'\bscripts faq[-\s:]*#([0-9]{1,5})\b')
-match_engine.add_matcher('Scripts FAQ', r'\bfaq[-\s:]*#([0-9]{1,5})\b', classes=['scripts'])
-match_engine.add_matcher('ESP',         r'#([0-9]{2,5})\b(?!-Ubuntu)', classes=['esp'])
-match_engine.add_matcher('ESP',         r'\besp[-\s:]*#([0-9]{1,5})\b')
-match_engine.add_matcher('Pokedex',     r'\bpokemon[-\s:]*#([0-9]{1,3})\b')
-match_engine.add_matcher('Pokedex',     r'#([0-9]{1,3})\b', classes=['lizdenys'])
-match_engine.add_matcher('MIT Class',   r'class ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\b')
-match_engine.add_matcher('MIT Class',   r"what's ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\?\b")
-match_engine.add_matcher('MIT Class',   r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', cond=is_personal)
-match_engine.add_matcher('Assassin',    r'\bcombo\b', classes=['assassin'])
-match_engine.add_matcher('Assassin',    r'\bcombination\b', classes=['assassin'])
-match_engine.add_matcher('SCIENCE',     r'^science$', classes=['axs'])
-match_engine.add_matcher('Debothena Test', r'\bdebothena test[-\s:]*#([0-9]{1,5})\b')
-
-match_engine.add_trac('Django', 'https://code.djangoproject.com', classes=[])
-match_engine.add_trac('Debathena', 'http://debathena.mit.edu/trac', classes=['debathena', 'linerva', 'jdreed', ])
-match_engine.add_trac('Scripts', 'http://scripts.mit.edu/trac', )
-match_engine.add_trac('XVM', 'http://xvm.scripts.mit.edu/trac', )
-match_engine.add_trac('Barnowl', 'http://barnowl.mit.edu', )
-match_engine.add_trac('Zephyr', 'http://zephyr.1ts.org', classes=['zephyr-dev'])
-match_engine.add_trac('SIPB', 'http://sipb.mit.edu/trac', )
-match_engine.add_trac('Remit', 'http://remit.scripts.mit.edu/trac', )
-match_engine.add_trac('ASA', 'http://asa.mit.edu/trac', )
-
 
 #############
 # CORE CODE #
