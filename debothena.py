@@ -209,10 +209,15 @@ class MatchEngine(object):
             assert name not in self.fetchers
             self.fetchers[name] = fetcher
 
-    def add_matchers(self, matchers):
-        for matcher in matchers:
-            assert matcher[0] in self.fetchers
-        self.matchers.extend(matchers)
+    def add_matcher(self, fetcher, regexp, cond=False, classes=True):
+        assert fetcher in self.fetchers
+        if cond:
+            pass
+        elif classes == True:
+            cond = lambda m: True
+        else:
+            cond = lambda m: (len([cls for cls in classes if cls in m.cls]) > 0)
+        self.matchers.append((fetcher, [build_matcher(regexp, re.I)], cond))
 
     def add_trac(self, name, url, classes=None):
         lname = name.lower()
@@ -220,16 +225,10 @@ class MatchEngine(object):
             classes = [lname]
         assert name not in self.fetchers
         self.fetchers[name] = fetch_trac(url)
-        trac_matchers = [
-            (name, [build_matcher(r'\b%s[-\s:]*#([0-9]{1,5})\b' % (lname, ), re.I)], lambda m: True),
-        ]
-        for cls in classes:
-            trac_matchers.extend([
-                (name, [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m, cls=cls: cls in m.cls),
-                # The "-Ubuntu" bit ignores any "uname -a" snippets that might get zephyred
-                (name, [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m, cls=cls: cls in m.cls),
-            ])
-        self.matchers.extend(trac_matchers)
+        self.add_matcher(name, r'\b%s[-\s:]*#([0-9]{1,5})\b' % (lname, ))
+        self.add_matcher(name, r'\btrac[-\s:]*#([0-9]{1,5})\b', classes=classes)
+        # The "-Ubuntu" bit ignores any "uname -a" snippets that might get zephyred
+        self.add_matcher(name, r'#([0-9]{2,5})\b(?!-Ubuntu)', classes=classes)
 
     def find_ticket_info(self, zgram):
         for tracker, ms, cond in self.matchers:
@@ -258,28 +257,26 @@ match_engine.add_fetchers({
     'Debothena Test': invoke_debothena,
     })
 
-match_engine.add_matchers((
-    ('CVE', [build_matcher(r'\b(CVE-[0-9]{4}-[0-9]{4})\b', re.I)], lambda m: True),
-    ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,8})\b', re.I)], lambda m: True),
-    ('Debian', [build_matcher(r'\bdebian[-\s:]#([0-9]{4,6})\b', re.I)], lambda m: True),
-    ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('RHBZ', [build_matcher(r'\bRHBZ[-\s:]#([0-9]{4,7})\b', re.I)], lambda m: True),
-    ('pag-screen', [build_matcher(r'\bpag-screen[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Mosh', [build_matcher(r'\bmosh[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Scripts FAQ', [build_matcher(r'\bscripts faq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Scripts FAQ', [build_matcher(r'\bfaq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
-    ('ESP', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'esp' in m.cls),
-    ('ESP', [build_matcher(r'\besp[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
-    ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls),
-    ('MIT Class', [build_matcher(r'class ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\b', re.I)], lambda m: True),
-    ('MIT Class', [build_matcher(r"what's ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\?\b", re.I)], lambda m: True),
-    ('MIT Class', [build_matcher(r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', re.I)], is_personal),
-    ('Assassin', [build_matcher(r'\bcombo\b', re.I)], lambda m: 'assassin' in m.cls),
-    ('Assassin', [build_matcher(r'\bcombination\b', re.I)], lambda m: 'assassin' in m.cls),
-    ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
-    ('Debothena Test', [build_matcher(r'\bdebothena test[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ))
+match_engine.add_matcher('CVE',         r'\b(CVE-[0-9]{4}-[0-9]{4})\b')
+match_engine.add_matcher('Launchpad',   r'\blp[-\s:]*#([0-9]{4,8})\b')
+match_engine.add_matcher('Debian',      r'\bdebian[-\s:]#([0-9]{4,6})\b')
+match_engine.add_matcher('Debothena',   r'\bdebothena[-\s:]*#([0-9]{1,5})\b')
+match_engine.add_matcher('RHBZ',        r'\bRHBZ[-\s:]#([0-9]{4,7})\b')
+match_engine.add_matcher('pag-screen',  r'\bpag-screen[-\s:]*#([0-9]{1,5})\b')
+match_engine.add_matcher('Mosh',        r'\bmosh[-\s:]*#([0-9]{1,5})\b')
+match_engine.add_matcher('Scripts FAQ', r'\bscripts faq[-\s:]*#([0-9]{1,5})\b')
+match_engine.add_matcher('Scripts FAQ', r'\bfaq[-\s:]*#([0-9]{1,5})\b', classes=['scripts'])
+match_engine.add_matcher('ESP',         r'#([0-9]{2,5})\b(?!-Ubuntu)', classes=['esp'])
+match_engine.add_matcher('ESP',         r'\besp[-\s:]*#([0-9]{1,5})\b')
+match_engine.add_matcher('Pokedex',     r'\bpokemon[-\s:]*#([0-9]{1,3})\b')
+match_engine.add_matcher('Pokedex',     r'#([0-9]{1,3})\b', classes=['lizdenys'])
+match_engine.add_matcher('MIT Class',   r'class ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\b')
+match_engine.add_matcher('MIT Class',   r"what's ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\?\b")
+match_engine.add_matcher('MIT Class',   r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', cond=is_personal)
+match_engine.add_matcher('Assassin',    r'\bcombo\b', classes=['assassin'])
+match_engine.add_matcher('Assassin',    r'\bcombination\b', classes=['assassin'])
+match_engine.add_matcher('SCIENCE',     r'^science$', classes=['axs'])
+match_engine.add_matcher('Debothena Test', r'\bdebothena test[-\s:]*#([0-9]{1,5})\b')
 
 match_engine.add_trac('Django', 'https://code.djangoproject.com', classes=[])
 match_engine.add_trac('Debathena', 'http://debathena.mit.edu/trac', classes=['debathena', 'linerva', 'jdreed', ])
