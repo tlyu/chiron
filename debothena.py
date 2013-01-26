@@ -18,7 +18,6 @@ except ImportError:
     import zephyr
 
 
-last_seen = {}
 seen_timeout = 5 * 60
 default_realm = 'ATHENA.MIT.EDU'
 parser = etree.HTMLParser(encoding='UTF-8')
@@ -310,9 +309,7 @@ def add_default_realm(principal):
     else:
         return "%s@%s" % (principal, default_realm, )
 
-cc_re = re.compile(r"CC:(?P<recips>( [a-z./@]+)+) *$", re.MULTILINE)
-
-def main():
+def zephyr_setup():
     zephyr.init()
     subs = zephyr.Subscriptions()
     for c in [
@@ -325,8 +322,65 @@ def main():
     ]:
         subs.add((c, '*', '*'))
     subs.add(('message', '*', '%me%'))
-    print "Listening..."
 
+cc_re = re.compile(r"CC:(?P<recips>( [a-z./@]+)+) *$", re.MULTILINE)
+
+def format_tickets(last_seen, zgram, tickets):
+    messages = []
+    for tracker, ticket in tickets:
+        print "Found ticket at %s on -c %s: %s, %s" % (datetime.datetime.now(), zgram.cls, tracker, ticket, )
+        fetcher = match_engine.fetchers.get(tracker)
+        if fetcher:
+            if (zgram.opcode.lower() != 'auto' and
+                last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout):
+                if zgram.cls[:2] == 'un':
+                    u, t = undebathena_fun()
+                else:
+                    u, t = fetcher(ticket)
+                if not t:
+                    t = 'Unable to identify ticket %s' % ticket
+                message = '%s ticket %s: %s' % (tracker, ticket, t)
+                messages.append((message, u))
+                last_seen[(tracker, ticket, zgram.cls)] = time.time()
+        else:
+            print "Fetcher %s not found" % (tracker, )
+    return messages
+
+def send_response(zgram, messages):
+    z = zephyr.ZNotice()
+    z.cls = zgram.cls
+    z.instance = zgram.instance
+    #z.format = "http://zephyr.1ts.org/wiki/df"
+    recipients = set()
+    if 'debothena' in zgram.recipient:
+        recipients.add(zgram.sender)
+        cc = cc_re.match(zbody(zgram))
+        if cc:
+            cc_recips = cc.group('recips').split(' ')
+            for cc_recip in cc_recips:
+                if cc_recip and 'debothena' not in cc_recip:
+                    recipients.add(add_default_realm(cc_recip.strip()))
+        z.sender = zgram.recipient
+    else:
+        recipients.add(zgram.recipient)
+    z.opcode = 'auto'
+    if len(messages) > 1:
+        body = '\n'.join(["%s (%s)" % (m, url) for m, url in messages])
+    else:
+        body = '\n'.join([m for m, url in messages])
+    if len(recipients) > 1:
+        cc_line = " ".join([strip_default_realm(r) for r in recipients])
+        body = "CC: %s\n%s" % (cc_line, body)
+    z.fields = [url, body]
+    print "  -> Reply to: %s" % (recipients, )
+    for recipient in recipients:
+        z.recipient = recipient
+        z.send()
+
+def main():
+    last_seen = {}
+    zephyr_setup()
+    print "Listening..."
     while True:
       try:
         zgram = zephyr.receive(True)
@@ -334,59 +388,12 @@ def main():
             continue
         if zgram.opcode.lower() == 'kill':
             sys.exit(0)
-        messages = []
         tickets = find_ticket_info(zgram)
-        for tracker, ticket in tickets:
-            print "Found ticket at %s on -c %s: %s, %s" % (datetime.datetime.now(), zgram.cls, tracker, ticket, )
-            fetcher = match_engine.fetchers.get(tracker)
-            if fetcher:
-                if (zgram.opcode.lower() != 'auto' and
-                    last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout):
-                    if zgram.cls[:2] == 'un':
-                        u, t = undebathena_fun()
-                    else:
-                        u, t = fetcher(ticket)
-                    if not t:
-                        t = 'Unable to identify ticket %s' % ticket
-                    message = '%s ticket %s: %s' % (tracker, ticket, t)
-                    messages.append((message, u))
-                    last_seen[(tracker, ticket, zgram.cls)] = time.time()
-            else:
-                print "Fetcher %s not found" % (tracker, )
-        send_url = (len(messages) > 1)
+        messages = format_tickets(last_seen, zgram, tickets)
         if messages:
-            z = zephyr.ZNotice()
-            z.cls = zgram.cls
-            z.instance = zgram.instance
-            #z.format = "http://zephyr.1ts.org/wiki/df"
-            recipients = set()
-            if 'debothena' in zgram.recipient:
-                recipients.add(zgram.sender)
-                cc = cc_re.match(zbody(zgram))
-                if cc:
-                    cc_recips = cc.group('recips').split(' ')
-                    for cc_recip in cc_recips:
-                        if cc_recip and 'debothena' not in cc_recip:
-                            recipients.add(add_default_realm(cc_recip.strip()))
-                z.sender = zgram.recipient
-            else:
-                recipients.add(zgram.recipient)
-            z.opcode = 'auto'
-            if send_url:
-                body = '\n'.join(["%s (%s)" % pair for pair in messages])
-            else:
-                body = '\n'.join([m for m, url in messages])
-            if len(recipients) > 1:
-                cc_line = " ".join([strip_default_realm(r) for r in recipients])
-                body = "CC: %s\n%s" % (cc_line, body)
-            z.fields = [u, body]
-            print "  -> Reply to: %s" % (recipients, )
-            for recipient in recipients:
-                z.recipient = recipient
-                z.send()
+            send_response(zgram, messages)
       except UnicodeDecodeError:
         pass
-
 
 if __name__ == '__main__':
     main()
