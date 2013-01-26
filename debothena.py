@@ -43,50 +43,10 @@ def instance_matcher(regex, flags=0):
 def is_personal(zgram):
     return bool(zgram.recipient)
 
-matchers = (
-    ('CVE', [build_matcher(r'\b(CVE-[0-9]{4}-[0-9]{4})\b', re.I)], lambda m: True),
-    ('Django', [build_matcher(r'\bdjango[-\s:]*#([0-9]{3,5})\b', re.I)], lambda m: True),
-    ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,8})\b', re.I)], lambda m: True),
-    ('Debian', [build_matcher(r'\bdebian[-\s:]#([0-9]{4,6})\b', re.I)], lambda m: True),
-    ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls or 'linerva' in m.cls or 'jdreed' in m.cls),
-    ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls or 'linerva' in m.cls or 'jdreed' in m.cls),
-    ('Debathena', [build_matcher(r'\bdebathena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('RHBZ', [build_matcher(r'\bRHBZ[-\s:]#([0-9]{4,7})\b', re.I)], lambda m: True),
-    ('Scripts', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
-    ('Scripts', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'scripts' in m.cls),
-    ('Scripts', [build_matcher(r'\bscripts[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Barnowl', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'barnowl' in m.cls),
-    ('Barnowl', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'barnowl' in m.cls),
-    ('Barnowl', [build_matcher(r'\bbarnowl[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Zephyr', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'zephyr-dev' in m.cls),
-    ('Zephyr', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'zephyr-dev' in m.cls),
-    ('Zephyr', [build_matcher(r'\bzephyr[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('pag-screen', [build_matcher(r'\bpag-screen[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('XVM', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'xvm' in m.cls),
-    ('XVM', [build_matcher(r'\bxvm[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Mosh', [build_matcher(r'\bmosh[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('SIPB', [build_matcher(r'\bsipb[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Scripts FAQ', [build_matcher(r'\bscripts faq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Scripts FAQ', [build_matcher(r'\bfaq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
-    ('Remit', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'remit' in m.cls),
-    ('Remit', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'remit' in m.cls),
-    ('Remit', [build_matcher(r'\bremit[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('ASA', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'asa' in m.cls),
-    ('ASA', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'asa' in m.cls),
-    ('ASA', [build_matcher(r'\basa[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('ESP', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'esp' in m.cls),
-    ('ESP', [build_matcher(r'\besp[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
-    ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls),
-    ('MIT Class', [build_matcher(r'class ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\b', re.I)], lambda m: True),
-    ('MIT Class', [build_matcher(r"what's ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\?\b", re.I)], lambda m: True),
-    ('MIT Class', [build_matcher(r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', re.I)], is_personal),
-    ('Assassin', [build_matcher(r'\bcombo\b', re.I)], lambda m: 'assassin' in m.cls),
-    ('Assassin', [build_matcher(r'\bcombination\b', re.I)], lambda m: 'assassin' in m.cls),
-    ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
-    ('Debothena Test', [build_matcher(r'\bdebothena test[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
-    )
+
+#####################
+# Code for Fetchers #
+#####################
 
 # Generic fetchers (parametrizable by site)
 
@@ -198,6 +158,16 @@ def fetch_mit_class(ticket):
     else:
         return u, None
 
+def undebathena_fun():
+    u = 'http://debathena.mit.edu/trac/wiki/PackageNamesWeDidntUse'
+    f = urllib.urlopen(u)
+    t = etree.parse(f, parser)
+    package = choice(t.xpath('id("content")//li')).text.strip()
+    dir = choice(['/etc', '/bin', '/usr/bin', '/sbin', '/usr/sbin',
+                  '/dev/mapper', '/etc/default', '/var/run'])
+    file = choice(os.listdir(dir))
+    return u, "%s should divert %s/%s" % (package, dir, file)
+
 # Special constant-text fetchers
 
 def deal_with_assassin(ticket):
@@ -224,6 +194,56 @@ u"""
  ┃┃┣╸ ┣┻┓┃ ┃ ┃ ┣━┫┣╸ ┃┗┫┣━┫
 ╺┻┛┗━╸┗━┛┗━┛ ╹ ╹ ╹┗━╸╹ ╹╹ ╹
 """)
+
+
+#########################################
+# Declarations of MATCHERS and FETCHERS #
+#########################################
+
+matchers = (
+    ('CVE', [build_matcher(r'\b(CVE-[0-9]{4}-[0-9]{4})\b', re.I)], lambda m: True),
+    ('Django', [build_matcher(r'\bdjango[-\s:]*#([0-9]{3,5})\b', re.I)], lambda m: True),
+    ('Launchpad', [build_matcher(r'\blp[-\s:]*#([0-9]{4,8})\b', re.I)], lambda m: True),
+    ('Debian', [build_matcher(r'\bdebian[-\s:]#([0-9]{4,6})\b', re.I)], lambda m: True),
+    ('Debathena', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'debathena' in m.cls or 'linerva' in m.cls or 'jdreed' in m.cls),
+    ('Debathena', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'debathena' in m.cls or 'linerva' in m.cls or 'jdreed' in m.cls),
+    ('Debathena', [build_matcher(r'\bdebathena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Debothena', [build_matcher(r'\bdebothena[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('RHBZ', [build_matcher(r'\bRHBZ[-\s:]#([0-9]{4,7})\b', re.I)], lambda m: True),
+    ('Scripts', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
+    ('Scripts', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'scripts' in m.cls),
+    ('Scripts', [build_matcher(r'\bscripts[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Barnowl', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'barnowl' in m.cls),
+    ('Barnowl', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'barnowl' in m.cls),
+    ('Barnowl', [build_matcher(r'\bbarnowl[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Zephyr', [build_matcher(r'\btrac[-\s:]*#([0-9]{2,5})\b', re.I)], lambda m: 'zephyr-dev' in m.cls),
+    ('Zephyr', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'zephyr-dev' in m.cls),
+    ('Zephyr', [build_matcher(r'\bzephyr[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('pag-screen', [build_matcher(r'\bpag-screen[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('XVM', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: 'xvm' in m.cls),
+    ('XVM', [build_matcher(r'\bxvm[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Mosh', [build_matcher(r'\bmosh[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('SIPB', [build_matcher(r'\bsipb[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Scripts FAQ', [build_matcher(r'\bscripts faq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Scripts FAQ', [build_matcher(r'\bfaq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
+    ('Remit', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'remit' in m.cls),
+    ('Remit', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'remit' in m.cls),
+    ('Remit', [build_matcher(r'\bremit[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('ASA', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'asa' in m.cls),
+    ('ASA', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'asa' in m.cls),
+    ('ASA', [build_matcher(r'\basa[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('ESP', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'esp' in m.cls),
+    ('ESP', [build_matcher(r'\besp[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    ('Pokedex', [build_matcher(r'\bpokemon[-\s:]*#([0-9]{1,3})\b', re.I)], lambda m: True),
+    ('Pokedex', [build_matcher(r'#([0-9]{1,3})\b', re.I)], lambda m: 'lizdenys' in m.cls),
+    ('MIT Class', [build_matcher(r'class ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\b', re.I)], lambda m: True),
+    ('MIT Class', [build_matcher(r"what's ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\?\b", re.I)], lambda m: True),
+    ('MIT Class', [build_matcher(r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', re.I)], is_personal),
+    ('Assassin', [build_matcher(r'\bcombo\b', re.I)], lambda m: 'assassin' in m.cls),
+    ('Assassin', [build_matcher(r'\bcombination\b', re.I)], lambda m: 'assassin' in m.cls),
+    ('SCIENCE', [build_matcher(r'^science$', re.I)], lambda m: 'axs' in m.cls),
+    ('Debothena Test', [build_matcher(r'\bdebothena test[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
+    )
 
 fetchers = {
     'CVE': fetch_cve,
@@ -258,16 +278,6 @@ def find_ticket_info(zgram):
                 ticket = m(zgram)
                 for t in ticket:
                     yield tracker, t
-
-def undebathena_fun():
-    u = 'http://debathena.mit.edu/trac/wiki/PackageNamesWeDidntUse'
-    f = urllib.urlopen(u)
-    t = etree.parse(f, parser)
-    package = choice(t.xpath('id("content")//li')).text.strip()
-    dir = choice(['/etc', '/bin', '/usr/bin', '/sbin', '/usr/sbin',
-                  '/dev/mapper', '/etc/default', '/var/run'])
-    file = choice(os.listdir(dir))
-    return u, "%s should divert %s/%s" % (package, dir, file)
 
 def strip_default_realm(principal):
     if '@' in principal:
