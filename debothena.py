@@ -69,6 +69,9 @@ matchers = (
     ('SIPB', [build_matcher(r'\bsipb[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bscripts faq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('Scripts FAQ', [build_matcher(r'\bfaq[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'scripts' in m.cls),
+    ('Remit', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'remit' in m.cls),
+    ('Remit', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'remit' in m.cls),
+    ('Remit', [build_matcher(r'\bremit[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
     ('ASA', [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: 'asa' in m.cls),
     ('ASA', [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)', re.I)], lambda m: 'asa' in m.cls),
     ('ASA', [build_matcher(r'\basa[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: True),
@@ -238,6 +241,7 @@ fetchers = {
     'Mosh': fetch_github('keithw', 'mosh'),
     'SIPB': fetch_trac('http://sipb.mit.edu/trac'),
     'Scripts FAQ': fetch_scripts_faq,
+    'Remit': fetch_trac('http://remit.scripts.mit.edu/trac'),
     'ASA': fetch_trac('http://asa.mit.edu/trac'),
     'ESP': fetch_github('learning-unlimited', 'ESP-Website'),
     'Pokedex': fetch_pokemon,
@@ -289,7 +293,7 @@ def main():
         'sipb', 'scripts', 'barnowl', 'zephyr-dev', 'xvm',
         'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya', 'kcr', 'jesus', 'nelhage',
         'assassin',
-        'asa', 'esp',
+        'remit', 'asa', 'esp',
     ]:
         subs.add((c, '*', '*'))
     subs.add(('message', '*', '%me%'))
@@ -326,7 +330,7 @@ def main():
             z = zephyr.ZNotice()
             z.cls = zgram.cls
             z.instance = zgram.instance
-            z.format = "http://zephyr.1ts.org/wiki/df"
+            #z.format = "http://zephyr.1ts.org/wiki/df"
             recipients = set()
             if 'debothena' in zgram.recipient:
                 recipients.add(zgram.sender)
