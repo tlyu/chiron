@@ -201,8 +201,12 @@ u"""
 
 class MatchEngine(object):
     def __init__(self, ):
-        self.matchers = []
+        self.classes = []
         self.fetchers = {}
+        self.matchers = []
+
+    def add_classes(self, classes):
+        self.classes.extend(classes)
 
     def add_fetchers(self, fetchers):
         for name, fetcher in fetchers.items():
@@ -239,6 +243,15 @@ class MatchEngine(object):
                         yield tracker, self.fetchers[tracker], t
 
 match_engine = MatchEngine()
+
+match_engine.add_classes([
+        'broder-test', 'geofft-test', 'adehnert-test',
+        'linerva', 'debathena', 'undebathena',
+        'sipb', 'scripts', 'barnowl', 'zephyr-dev', 'xvm',
+        'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya', 'kcr', 'jesus', 'nelhage',
+        'assassin',
+        'remit', 'asa', 'esp',
+    ])
 
 match_engine.add_fetchers({
     'CVE': fetch_cve,
@@ -306,17 +319,10 @@ def add_default_realm(principal):
     else:
         return "%s@%s" % (principal, default_realm, )
 
-def zephyr_setup():
+def zephyr_setup(classes):
     zephyr.init()
     subs = zephyr.Subscriptions()
-    for c in [
-        'broder-test', 'geofft-test', 'adehnert-test',
-        'linerva', 'debathena', 'undebathena',
-        'sipb', 'scripts', 'barnowl', 'zephyr-dev', 'xvm',
-        'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya', 'kcr', 'jesus', 'nelhage',
-        'assassin',
-        'remit', 'asa', 'esp',
-    ]:
+    for c in classes:
         subs.add((c, '*', '*'))
     subs.add(('message', '*', '%me%'))
 
@@ -370,9 +376,9 @@ def send_response(zgram, messages):
         z.recipient = recipient
         z.send()
 
-def main():
+def main(match_engine):
     last_seen = {}
-    zephyr_setup()
+    zephyr_setup(match_engine.classes)
     print "Listening..."
     while True:
       try:
@@ -395,4 +401,4 @@ def main():
         pass
 
 if __name__ == '__main__':
-    main()
+    main(match_engine)
