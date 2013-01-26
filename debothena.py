@@ -226,9 +226,9 @@ class MatchEngine(object):
         ]
         for cls in classes:
             trac_matchers.extend([
-                (name, [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m: cls in m.cls),
+                (name, [build_matcher(r'\btrac[-\s:]*#([0-9]{1,5})\b', re.I)], lambda m, cls=cls: cls in m.cls),
                 # The "-Ubuntu" bit ignores any "uname -a" snippets that might get zephyred
-                (name, [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m: cls in m.cls),
+                (name, [build_matcher(r'#([0-9]{2,5})\b(?!-Ubuntu)')], lambda m, cls=cls: cls in m.cls),
             ])
         self.matchers.extend(trac_matchers)
 
@@ -275,7 +275,7 @@ match_engine.add_matchers((
     ))
 
 match_engine.add_trac('Django', 'https://code.djangoproject.com', classes=[])
-match_engine.add_trac('Debathena', 'http://debathena.mit.edu/trac', )
+match_engine.add_trac('Debathena', 'http://debathena.mit.edu/trac', classes=['debathena', 'linerva', 'jdreed', ])
 match_engine.add_trac('Scripts', 'http://scripts.mit.edu/trac', )
 match_engine.add_trac('XVM', 'http://xvm.scripts.mit.edu/trac', )
 match_engine.add_trac('Barnowl', 'http://barnowl.mit.edu', )
