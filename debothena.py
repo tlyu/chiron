@@ -184,6 +184,16 @@ def fetch_xkcd(comic):
     else:
         return u, None
 
+def fetch_unicode(codepoint):
+    u = 'http://www.fileformat.info/info/unicode/char/%s/index.htm' % (codepoint, )
+    f = urllib.urlopen(u)
+    t = etree.parse(f, parser)
+    title = t.xpath('string(//title)')
+    if title and f.getcode() == 200:
+        return u, title
+    else:
+        return u, None
+
 
 # Special constant-text fetchers
 
