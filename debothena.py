@@ -167,6 +167,14 @@ def undebathena_fun():
     file = choice(os.listdir(dir))
     return u, "%s should divert %s/%s" % (package, dir, file)
 
+def fetch_bible(verse):
+    u = 'http://www.esvapi.org/v2/rest/passageQuery?key=IP&passage=%s&output-format=plain-text' % (urllib.quote_plus(verse), )
+    bible_text = urllib.urlopen(u).read()
+    copyright = "(From The Holy Bible, English Standard Version. See http://www.crosswaybibles.org and http://www.esvapi.org/.)"
+    text = "\n%s\n%s" % (bible_text, copyright, )
+    return u, text
+
+
 # Special constant-text fetchers
 
 def deal_with_assassin(ticket):
