@@ -340,6 +340,3 @@ def main(match_engine):
             send_response(zgram, messages)
       except UnicodeDecodeError:
         pass
-
-if __name__ == '__main__':
-    main(match_engine)
