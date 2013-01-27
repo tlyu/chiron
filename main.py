@@ -25,6 +25,7 @@ match_engine.add_fetchers({
     'Pokedex': debothena.fetch_pokemon,
     'MIT Class': debothena.fetch_mit_class,
     'Bible': debothena.fetch_bible,
+    'XKCD': debothena.fetch_xkcd,
     'Assassin': debothena.deal_with_assassin,
     'SCIENCE': debothena.invoke_science,
     'Debothena Test': debothena.invoke_debothena,
@@ -47,6 +48,7 @@ match_engine.add_matcher('MIT Class',   r'class ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\
 match_engine.add_matcher('MIT Class',   r"what's ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\?\b")
 match_engine.add_matcher('MIT Class',   r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', cond=debothena.is_personal)
 match_engine.add_matcher('Bible',       r'Bible\(([\w :-]+)\)')
+match_engine.add_matcher('XKCD',        r'\bxkcd[-\s:]#([0-9]{1,5})\b')
 match_engine.add_matcher('Assassin',    r'\bcombo\b', classes=['assassin'])
 match_engine.add_matcher('Assassin',    r'\bcombination\b', classes=['assassin'])
 match_engine.add_matcher('SCIENCE',     r'^science$', classes=['axs'])

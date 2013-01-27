@@ -174,6 +174,16 @@ def fetch_bible(verse):
     text = "\n%s\n%s" % (bible_text, copyright, )
     return u, text
 
+def fetch_xkcd(comic):
+    u = 'http://xkcd.com/%s/' % (comic, )
+    f = urllib.urlopen(u)
+    t = etree.parse(f, parser)
+    title = t.xpath('string(//title)')
+    if title and f.getcode() == 200:
+        return u, title
+    else:
+        return u, None
+
 
 # Special constant-text fetchers
 
