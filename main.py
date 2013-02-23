@@ -6,7 +6,7 @@ match_engine = debothena.MatchEngine()
 match_engine.add_classes([
         'broder-test', 'geofft-test', 'adehnert-test',
         'linerva', 'debathena', 'undebathena', 'consult',
-        'sipb', 'scripts', 'barnowl', 'zephyr-dev', 'xvm',
+        'sipb', 'sipb-auto', 'scripts', 'barnowl', 'zephyr-dev', 'xvm',
         'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya', 'kcr', 'jesus', 'nelhage',
         'assassin',
         'remit', 'asa', 'esp',
