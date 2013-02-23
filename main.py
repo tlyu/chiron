@@ -17,6 +17,7 @@ match_engine.add_fetchers({
     'Launchpad': debothena.fetch_launchpad,
     'Debian': debothena.fetch_debbugs('http://bugs.debian.org'),
     'Debothena': debothena.fetch_github('sipb', 'debothena'),
+    'zcommit': debothena.fetch_github('sipb', 'zcommit'),
     'RHBZ': debothena.fetch_bugzilla('https://bugzilla.redhat.com'),
     'pag-screen': debothena.fetch_github('sipb', 'pag-screen'),
     'Mosh': debothena.fetch_github('keithw', 'mosh'),
@@ -36,6 +37,7 @@ match_engine.add_matcher('CVE',         r'\b(CVE-[0-9]{4}-[0-9]{4})\b')
 match_engine.add_matcher('Launchpad',   r'\blp[-\s:]*#([0-9]{4,8})\b')
 match_engine.add_matcher('Debian',      r'\bdebian[-\s:]#([0-9]{4,6})\b')
 match_engine.add_matcher('Debothena',   r'\bdebothena[-\s:]*#([0-9]{1,5})\b')
+match_engine.add_matcher('zcommit',     r'\bzcommit[-\s:]*#([0-9]{1,5})\b')
 match_engine.add_matcher('RHBZ',        r'\bRHBZ[-\s:]#([0-9]{4,7})\b')
 match_engine.add_matcher('pag-screen',  r'\bpag-screen[-\s:]*#([0-9]{1,5})\b')
 match_engine.add_matcher('Mosh',        r'\bmosh[-\s:]*#([0-9]{1,5})\b')
