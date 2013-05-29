@@ -190,7 +190,7 @@ def fetch_unicode(codepoint):
     t = etree.parse(f, parser)
     title = t.xpath('string(//title)')
     if title and f.getcode() == 200:
-        return u, title
+        return u, title + ': ' + unichr(int(codepoint, 16))
     else:
         return u, None
 
