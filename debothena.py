@@ -320,6 +320,7 @@ def send_response(zgram, messages):
     z.instance = zgram.instance
     #z.format = "http://zephyr.1ts.org/wiki/df"
     recipients = set()
+    directed = False
     if 'debothena' in zgram.recipient:
         recipients.add(zgram.sender)
         cc = cc_re.match(zbody(zgram))
@@ -328,22 +329,28 @@ def send_response(zgram, messages):
             for cc_recip in cc_recips:
                 if cc_recip and 'debothena' not in cc_recip:
                     recipients.add(add_default_realm(cc_recip.strip()))
+        if zgram.opcode == "":
+            directed = True
         z.sender = zgram.recipient
     else:
         recipients.add(zgram.recipient)
     z.opcode = 'auto'
     if len(messages) > 1:
         body = '\n'.join(["%s (%s)" % (m, url) for m, url in messages])
-    else:
+    elif len(messages) > 0:
         body = '\n'.join([m for m, url in messages])
+    else:
+        url = "https://github.com/sipb/debothena"
+        body = "No ticket number found in message."
     if len(recipients) > 1:
         cc_line = " ".join([strip_default_realm(r) for r in recipients])
         body = "CC: %s\n%s" % (cc_line, body)
     z.fields = [url, body]
     print '  -> Reply to: %s (original zephyr was to "%s")' % (recipients, zgram.recipient, )
-    for recipient in recipients:
-        z.recipient = recipient
-        z.send()
+    if messages or directed:
+        for recipient in recipients:
+            z.recipient = recipient
+            z.send()
 
 def main(match_engine):
     last_seen = {}
@@ -362,9 +369,8 @@ def main(match_engine):
             zgram.cls = zgram.instance
         tickets = match_engine.find_ticket_info(zgram)
         messages = format_tickets(last_seen, zgram, tickets)
-        if messages:
-            if orig_class:
-                zgram.cls = orig_class
-            send_response(zgram, messages)
+        if orig_class:
+            zgram.cls = orig_class
+        send_response(zgram, messages)
       except UnicodeDecodeError:
         pass
