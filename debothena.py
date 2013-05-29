@@ -340,7 +340,7 @@ def send_response(zgram, messages):
         cc_line = " ".join([strip_default_realm(r) for r in recipients])
         body = "CC: %s\n%s" % (cc_line, body)
     z.fields = [url, body]
-    print "  -> Reply to: %s" % (recipients, )
+    print '  -> Reply to: %s (original zephyr was to "%s")' % (recipients, zgram.recipient, )
     for recipient in recipients:
         z.recipient = recipient
         z.send()
