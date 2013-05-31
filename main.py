@@ -15,6 +15,7 @@ def add_default_classes(match_engine):
             'sipb', 'sipb-auto', 'scripts', 'barnowl', 'zephyr-dev', 'xvm',
             'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya', 'kcr', 'jesus', 'nelhage',
             'assassin',
+            'shank',
             'remit', 'asa', 'esp',
         ])
 
