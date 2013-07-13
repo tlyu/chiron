@@ -251,7 +251,7 @@ class MatchEngine(object):
             assert name not in self.fetchers
             self.fetchers[name] = fetcher
 
-    def add_matcher(self, fetcher, regexp, cond=False, classes=True):
+    def add_matcher(self, fetcher, regexp, cond=False, classes=True, flags=re.I, ):
         assert fetcher in self.fetchers
         if cond:
             pass
@@ -259,7 +259,7 @@ class MatchEngine(object):
             cond = lambda m: True
         else:
             cond = lambda m: (len([cls for cls in classes if cls in m.cls]) > 0)
-        self.matchers.append((fetcher, [build_matcher(regexp, re.I)], cond))
+        self.matchers.append((fetcher, [build_matcher(regexp, flags)], cond))
 
     def add_trac(self, name, url, classes=None):
         lname = name.lower()
