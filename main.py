@@ -36,6 +36,7 @@ def add_default_fetchers(match_engine):
         'Bible': debothena.fetch_bible,
         'XKCD': debothena.fetch_xkcd,
         'Unicode': debothena.fetch_unicode,
+        'Airport': debothena.fetch_airport,
         'Assassin': debothena.deal_with_assassin,
         'SCIENCE': debothena.invoke_science,
         'Debothena Test': debothena.invoke_debothena,
@@ -62,6 +63,7 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('Bible',       r'Bible\(([\w :-]+)\)')
     match_engine.add_matcher('XKCD',        r'\bxkcd[-\s:]#([0-9]{1,5})\b')
     match_engine.add_matcher('Unicode',     r'\bu\+([0-9a-fA-F]{2,6})\b')
+    match_engine.add_matcher('Airport',     r'\b([0-9a-z]{3,4}(?:[.](?:IATA|FAA))?) airport\b')
     match_engine.add_matcher('Assassin',    r'\bcombo\b', classes=['assassin'])
     match_engine.add_matcher('Assassin',    r'\bcombination\b', classes=['assassin'])
     match_engine.add_matcher('SCIENCE',     r'^science$', classes=['axs'])
