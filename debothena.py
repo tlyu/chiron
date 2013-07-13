@@ -198,8 +198,13 @@ def fetch_airport(code):
     u = 'http://www.gcmap.com/airport/%s' % (code, )
     f = urllib.urlopen(u)
     t = etree.parse(f, parser)
-    title = t.xpath('string(//meta[@name="geo.placename"]/@content)')
-    if title and f.getcode() == 200:
+    place = t.xpath('string(//meta[@name="geo.placename"]/@content)')
+    name = t.xpath('string(//td[@class="fn org"])')
+    if place and f.getcode() == 200:
+        if name:
+            title = "%s (%s)" % (place, name, )
+        else:
+            title = place
         return u, title
     else:
         return u, None
