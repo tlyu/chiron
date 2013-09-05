@@ -336,13 +336,13 @@ def send_response(zgram, messages):
     #z.format = "http://zephyr.1ts.org/wiki/df"
     recipients = set()
     directed = False
-    if 'debothena' in zgram.recipient:
+    if 'chiron' in zgram.recipient:
         recipients.add(zgram.sender)
         cc = cc_re.match(zbody(zgram))
         if cc:
             cc_recips = cc.group('recips').split(' ')
             for cc_recip in cc_recips:
-                if cc_recip and 'debothena' not in cc_recip:
+                if cc_recip and 'chiron' not in cc_recip:
                     recipients.add(add_default_realm(cc_recip.strip()))
         if zgram.opcode == "":
             directed = True
@@ -355,7 +355,7 @@ def send_response(zgram, messages):
     elif len(messages) > 0:
         body = '\n'.join([m for m, url in messages])
     else:
-        url = "https://github.com/sipb/debothena"
+        url = "https://github.com/sipb/chiron"
         body = "No ticket number found in message."
     if len(recipients) > 1:
         cc_line = " ".join([strip_default_realm(r) for r in recipients])

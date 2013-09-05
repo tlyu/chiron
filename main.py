@@ -1,8 +1,8 @@
 #!/usr/bin/python
-import debothena
+import chiron
 
 def init_match_engine():
-    match_engine = debothena.MatchEngine()
+    match_engine = chiron.MatchEngine()
     add_default_classes(match_engine)
     add_default_fetchers(match_engine)
     add_default_matchers(match_engine)
@@ -21,32 +21,32 @@ def add_default_classes(match_engine):
 
 def add_default_fetchers(match_engine):
     match_engine.add_fetchers({
-        'CVE': debothena.fetch_cve,
-        'Launchpad': debothena.fetch_launchpad,
-        'Debian': debothena.fetch_debbugs('http://bugs.debian.org'),
-        'Debothena': debothena.fetch_github('sipb', 'debothena'),
-        'zcommit': debothena.fetch_github('sipb', 'zcommit'),
-        'RHBZ': debothena.fetch_bugzilla('https://bugzilla.redhat.com'),
-        'pag-screen': debothena.fetch_github('sipb', 'pag-screen'),
-        'Mosh': debothena.fetch_github('keithw', 'mosh'),
-        'Scripts FAQ': debothena.fetch_scripts_faq,
-        'ESP': debothena.fetch_github('learning-unlimited', 'ESP-Website'),
-        'Pokedex': debothena.fetch_pokemon,
-        'MIT Class': debothena.fetch_mit_class,
-        'Bible': debothena.fetch_bible,
-        'XKCD': debothena.fetch_xkcd,
-        'Unicode': debothena.fetch_unicode,
-        'Airport': debothena.fetch_airport,
-        'Assassin': debothena.deal_with_assassin,
-        'SCIENCE': debothena.invoke_science,
-        'Debothena Test': debothena.invoke_debothena,
+        'CVE': chiron.fetch_cve,
+        'Launchpad': chiron.fetch_launchpad,
+        'Debian': chiron.fetch_debbugs('http://bugs.debian.org'),
+        'Chiron': chiron.fetch_github('sipb', 'chiron'),
+        'zcommit': chiron.fetch_github('sipb', 'zcommit'),
+        'RHBZ': chiron.fetch_bugzilla('https://bugzilla.redhat.com'),
+        'pag-screen': chiron.fetch_github('sipb', 'pag-screen'),
+        'Mosh': chiron.fetch_github('keithw', 'mosh'),
+        'Scripts FAQ': chiron.fetch_scripts_faq,
+        'ESP': chiron.fetch_github('learning-unlimited', 'ESP-Website'),
+        'Pokedex': chiron.fetch_pokemon,
+        'MIT Class': chiron.fetch_mit_class,
+        'Bible': chiron.fetch_bible,
+        'XKCD': chiron.fetch_xkcd,
+        'Unicode': chiron.fetch_unicode,
+        'Airport': chiron.fetch_airport,
+        'Assassin': chiron.deal_with_assassin,
+        'SCIENCE': chiron.invoke_science,
+        'Debothena Test': chiron.invoke_debothena,
         })
 
 def add_default_matchers(match_engine):
     match_engine.add_matcher('CVE',         r'\b(CVE-[0-9]{4}-[0-9]{4})\b')
     match_engine.add_matcher('Launchpad',   r'\blp[-\s:]*#([0-9]{4,8})\b')
     match_engine.add_matcher('Debian',      r'\bdebian[-\s:]#([0-9]{4,6})\b')
-    match_engine.add_matcher('Debothena',   r'\bdebothena[-\s:]*#([0-9]{1,5})\b')
+    match_engine.add_matcher('Chiron',      r'\bchiron[-\s:]*#([0-9]{1,5})\b')
     match_engine.add_matcher('zcommit',     r'\bzcommit[-\s:]*#([0-9]{1,5})\b')
     match_engine.add_matcher('RHBZ',        r'\bRHBZ[-\s:]#([0-9]{4,7})\b')
     match_engine.add_matcher('pag-screen',  r'\bpag-screen[-\s:]*#([0-9]{1,5})\b')
@@ -59,7 +59,7 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('Pokedex',     r'#([0-9]{1,3})\b', classes=['lizdenys'])
     match_engine.add_matcher('MIT Class',   r'class ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\b')
     match_engine.add_matcher('MIT Class',   r"what's ([0-9a-z]{1,3}[.][0-9a-z]{1,4})\?\b")
-    match_engine.add_matcher('MIT Class',   r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', cond=debothena.is_personal)
+    match_engine.add_matcher('MIT Class',   r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', cond=chiron.is_personal)
     match_engine.add_matcher('Bible',       r'Bible\(([\w :-]+)\)')
     match_engine.add_matcher('XKCD',        r'\bxkcd[-\s:]#([0-9]{1,5})\b')
     match_engine.add_matcher('Unicode',     r'\bu\+([0-9a-fA-F]{2,6})\b')
@@ -81,4 +81,4 @@ def add_default_matchers(match_engine):
 
 if __name__ == '__main__':
     match_engine = init_match_engine()
-    debothena.main(match_engine)
+    chiron.main(match_engine)

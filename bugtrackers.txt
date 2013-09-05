@@ -17,7 +17,7 @@
     - pag-screen [adehnert]
     - Remit [adehnert]
     - Mosh [adehnert]
-    - Debothena [adehnert]
+    - Chiron [adehnert]
         - Debothena Test [geofft]
 - Student groups
     - ASA [geofft]
