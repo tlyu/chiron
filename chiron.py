@@ -312,12 +312,18 @@ def zephyr_setup(classes):
 
 cc_re = re.compile(r"CC:(?P<recips>( [a-z./@]+)+) *$", re.MULTILINE)
 
+def is_personal(zgram):
+    # recipient nonempty -> personal
+    return "" != zgram.recipient
+
 def format_tickets(last_seen, zgram, tickets):
     messages = []
     for tracker, fetcher, ticket in tickets:
         print "Found ticket at %s on -c %s: %s, %s" % (datetime.datetime.now(), zgram.cls, tracker, ticket, )
-        if (zgram.opcode.lower() != 'auto' and
-            last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout):
+        old_enough = (last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout)
+        if is_personal(zgram): # for personals, don't bother tracking age
+            old_enough = True
+        if (zgram.opcode.lower() != 'auto' and old_enough):
             if zgram.cls[:2] == 'un':
                 u, t = undebathena_fun()
             else:
@@ -336,7 +342,7 @@ def send_response(zgram, messages):
     #z.format = "http://zephyr.1ts.org/wiki/df"
     recipients = set()
     directed = False
-    if zgram.recipient: # recipient nonempty -> personal
+    if is_personal(zgram):
         recipients.add(zgram.sender)
         cc = cc_re.match(zbody(zgram))
         if cc:
