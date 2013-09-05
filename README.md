@@ -10,7 +10,7 @@ bible verses.
 Features
 --------
 
-- Supports "tickets" in more than two dozen different "bugtracker" instances --- see `bugtrackers.py` for a list
+- Supports "tickets" in more than two dozen different "bugtracker" instances --- see `bugtrackers.txt` for a list
 - Generic support for projects using
     - Trac
     - Github Issues
