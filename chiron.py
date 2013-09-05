@@ -336,7 +336,7 @@ def send_response(zgram, messages):
     #z.format = "http://zephyr.1ts.org/wiki/df"
     recipients = set()
     directed = False
-    if 'chiron' in zgram.recipient:
+    if zgram.recipient: # recipient nonempty -> personal
         recipients.add(zgram.sender)
         cc = cc_re.match(zbody(zgram))
         if cc:
