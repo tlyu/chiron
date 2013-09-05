@@ -29,7 +29,7 @@ def zbody(zgram):
 def build_matcher(regex, flags=0):
     r = re.compile(regex, flags)
     def match(zgram):
-        return r.findall(zbody(zgram))
+        return r.finditer(zbody(zgram))
     return match
 
 def instance_matcher(regex, flags=0):
@@ -37,7 +37,7 @@ def instance_matcher(regex, flags=0):
     def match(zgram):
         if zgram.opcode.lower() == 'auto':
             return []
-        return r.findall(zgram.instance)
+        return r.finditer(zgram.instance)
     return match
 
 def is_personal(zgram):
@@ -254,6 +254,9 @@ u"""
 # Declarations of MATCHERS and FETCHERS #
 #########################################
 
+def subspan((a, b), (c, d)):
+    return cmp(a, c) - cmp(b, d) >= 1
+
 class MatchEngine(object):
     def __init__(self, ):
         self.classes = []
@@ -290,12 +293,17 @@ class MatchEngine(object):
         self.add_matcher(name, r'#([0-9]{2,5})\b(?!-Ubuntu)', classes=classes)
 
     def find_ticket_info(self, zgram):
+        tickets = []
         for tracker, ms, cond in self.matchers:
             if cond(zgram):
                 for m in ms:
-                    ticket = m(zgram)
-                    for t in ticket:
-                        yield tracker, self.fetchers[tracker], t
+                    for match in m(zgram):
+                        span = match.span()
+                        if any(subspan(span, span1) for tracker1, fetcher1, t1, span1 in tickets):
+                            continue
+                        tickets = filter(lambda (tracker1, fetcher1, t1, span1): not subspan(span1, span), tickets)
+                        tickets.append((tracker, self.fetchers[tracker], match.group(1), span))
+        return tickets
 
 
 #############
@@ -330,7 +338,7 @@ def is_personal(zgram):
 
 def format_tickets(last_seen, zgram, tickets):
     messages = []
-    for tracker, fetcher, ticket in tickets:
+    for tracker, fetcher, ticket, span in tickets:
         print "Found ticket at %s on -c %s: %s, %s" % (datetime.datetime.now(), zgram.cls, tracker, ticket, )
         old_enough = (last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout)
         if is_personal(zgram): # for personals, don't bother tracking age
