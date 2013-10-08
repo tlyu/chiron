@@ -23,7 +23,8 @@ default_realm = 'ATHENA.MIT.EDU'
 parser = etree.HTMLParser(encoding='UTF-8')
 
 def zbody(zgram):
-    return zgram.fields[1] if len(zgram.fields) > 1 else zgram.fields[0]
+    body = zgram.fields[1] if len(zgram.fields) > 1 else zgram.fields[0]
+    return body.decode('utf8')
 
 def build_matcher(regex, flags=0):
     r = re.compile(regex, flags)
