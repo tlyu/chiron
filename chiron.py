@@ -332,10 +332,6 @@ def zephyr_setup(classes):
 
 cc_re = re.compile(r"CC:(?P<recips>( [a-z./@]+)+) *$", re.MULTILINE)
 
-def is_personal(zgram):
-    # recipient nonempty -> personal
-    return "" != zgram.recipient
-
 def format_tickets(last_seen, zgram, tickets):
     messages = []
     for tracker, fetcher, ticket, span in tickets:
