@@ -28,12 +28,25 @@ Chiron must be run with tickets so that it can sub to incoming zephyrs. You may
 find [`k5start`](http://www.eyrie.org/~eagle/software/kstart/) helpful for
 keeping current tickets available.
 
-For testing or development purposes, you may want to run `dev.py`, which uses
-the standard set of bugtrackers, but listens only to personal zephyrs.
+You can run it subbed to personals only with `./main.py`.
 
-In addition, there is one primary Chiron instance, run by Alex Dehnert, which
-uses the configuration in `main.py`. Feel free to crib from `main.py` in
-setting up your own Chiron instance. However, please ensure that if you run a
-Chiron instance it listens on different classes and/or uses different matchers
-than the primary instance, so that users don't receive multiple replies to
-their zephyrs.
+Primary production deployment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Alex Dehnert <adehnert> runs the primary Chiron instance, and is generally
+happy to add additional matchers, fetchers, or classes. To request changes,
+please [file an issue (or pull request) on
+Github](https://github.com/sipb/chiron/issues/), zephyr him, or send mail to
+chiron@mit.edu.
+
+Private deployments
+~~~~~~~~~~~~~~~~~~~
+
+If you want to run your own private production Chiron instance, you can also do
+that. By default, `main.py` will only sub to personals; when run with the
+`--classes` option it will sub to a variety of additional classes. Feel free to
+crib from `main.py` in setting up your own Chiron instance, or run it subbed
+only to personals. However, please ensure that if you run a Chiron instance
+that subs to non-personals, it listens on different classes and/or uses
+different matchers than the primary instance, so that users don't receive
+multiple replies to their zephyrs.
