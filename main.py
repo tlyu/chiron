@@ -1,9 +1,12 @@
 #!/usr/bin/python
+from optparse import OptionParser
+
 import chiron
 
-def init_match_engine():
+def init_match_engine(classes=False, ):
     match_engine = chiron.MatchEngine()
-    add_default_classes(match_engine)
+    if classes:
+        add_default_classes(match_engine)
     add_default_fetchers(match_engine)
     add_default_matchers(match_engine)
     return match_engine
@@ -79,6 +82,18 @@ def add_default_matchers(match_engine):
     match_engine.add_trac('Remit', 'http://remit.scripts.mit.edu/trac', )
     match_engine.add_trac('ASA', 'http://asa.mit.edu/trac', )
 
+def parse_args():
+    parser = OptionParser(usage='usage: %prog [--classes]')
+    parser.add_option('-c', '--classes', dest='classes',
+            default=False, action='store_true',
+            help='Sub to classes',
+    )
+    (options, args) = parser.parse_args()
+    if len(args) != 0:
+        parser.error("got %d arguments; expected none" % (len(args), ))
+    return options, args
+
 if __name__ == '__main__':
-    match_engine = init_match_engine()
+    options, args = parse_args()
+    match_engine = init_match_engine(classes=options.classes)
     chiron.main(match_engine)
