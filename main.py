@@ -39,6 +39,7 @@ def add_default_fetchers(match_engine):
         'Bible': chiron.fetch_bible,
         'XKCD': chiron.fetch_xkcd,
         'Unicode': chiron.fetch_unicode,
+        'Unicode Character': chiron.fetch_unicode_char,
         'Airport': chiron.fetch_airport,
         'Assassin': chiron.deal_with_assassin,
         'SCIENCE': chiron.invoke_science,
@@ -66,6 +67,7 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('Bible',       r'Bible\(([\w :-]+)\)')
     match_engine.add_matcher('XKCD',        r'\bxkcd[-\s:]#([0-9]{1,5})\b')
     match_engine.add_matcher('Unicode',     r'\bu\+([0-9a-fA-F]{2,6})\b')
+    match_engine.add_matcher('Unicode Character',   r'\bunicode\((.)\)')
     match_engine.add_matcher('Airport',     r'\b([0-9A-Z]{3,4}(?:[.](?:IATA|FAA))?)\s[Aa]irport\b', flags=0)
     match_engine.add_matcher('Assassin',    r'\bcombo\b', classes=['assassin'])
     match_engine.add_matcher('Assassin',    r'\bcombination\b', classes=['assassin'])

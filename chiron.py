@@ -195,6 +195,17 @@ def fetch_unicode(codepoint):
     else:
         return u, None
 
+def fetch_unicode_char(character):
+    codepoint = format(ord(character), 'x')
+    u = 'http://www.fileformat.info/info/unicode/char/%s/index.htm' % (codepoint, )
+    f = urllib.urlopen(u)
+    t = etree.parse(f, parser)
+    title = t.xpath('string(//title)')
+    if title and f.getcode() == 200:
+        return u, title
+    else:
+        return u, "U+%s" % (codepoint, )
+
 def fetch_airport(code):
     u = 'http://www.gcmap.com/airport/%s' % (code, )
     f = urllib.urlopen(u)
