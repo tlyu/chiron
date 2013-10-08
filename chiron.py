@@ -400,8 +400,17 @@ def main(match_engine):
             continue
         if zgram.opcode.lower() == 'kill':
             sys.exit(0)
+
+        # We have default fetchers for some classes. This adds two more ways
+        # to trigger default fetchers behavior:
+        # - test classes (for easier testing of defaults)
+        # - instanced personals (to facilitate looking up many tickets for one project)
+        #
+        # This is implemented by copying the instance to the class while
+        # processing matchers (and then undoing it), which is admittedly a bit
+        # hacky. :/
         orig_class = False
-        if "-test" in zgram.cls:
+        if ("-test" in zgram.cls) or (is_personal(zgram) and zgram.instance != 'personal'):
             orig_class = zgram.cls
             zgram.cls = zgram.instance
         tickets = match_engine.find_ticket_info(zgram)
