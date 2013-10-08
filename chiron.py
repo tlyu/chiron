@@ -24,7 +24,9 @@ parser = etree.HTMLParser(encoding='UTF-8')
 
 def zbody(zgram):
     body = zgram.fields[1] if len(zgram.fields) > 1 else zgram.fields[0]
-    return body.decode('utf8')
+    if type(body) != unicode:
+        body = body.decode('utf8')
+    return body
 
 def build_matcher(regex, flags=0):
     r = re.compile(regex, flags)
