@@ -75,7 +75,8 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('Debothena Test', r'\bdebothena test[-\s:]*#([0-9]{1,5})\b')
 
     match_engine.add_trac('Django', 'https://code.djangoproject.com', classes=[])
-    match_engine.add_trac('Debathena', 'http://debathena.mit.edu/trac', classes=['debathena', 'linerva', 'jdreed', ])
+    match_engine.add_trac('Debathena', 'http://debathena.mit.edu/trac', classes=['debathena', 'jdreed', ])
+    match_engine.add_trac('Linerva', 'http://debathena.mit.edu/trac', classes=['linerva', ])
     match_engine.add_trac('Scripts', 'http://scripts.mit.edu/trac', )
     match_engine.add_trac('XVM', 'http://xvm.scripts.mit.edu/trac', )
     match_engine.add_trac('Barnowl', 'http://barnowl.mit.edu', )
