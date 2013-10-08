@@ -83,6 +83,7 @@ def add_default_matchers(match_engine):
     match_engine.add_trac('Zephyr', 'http://zephyr.1ts.org', classes=['zephyr-dev'])
     match_engine.add_trac('SIPB', 'http://sipb.mit.edu/trac', )
     match_engine.add_trac('Remit', 'http://remit.scripts.mit.edu/trac', )
+    match_engine.add_trac('etherpad.mit.edu', 'http://etherpad.scripts.mit.edu/trac', )
     match_engine.add_trac('ASA', 'http://asa.mit.edu/trac', )
 
 def parse_args():
