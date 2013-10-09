@@ -69,9 +69,9 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('Unicode',     r'\bu\+([0-9a-fA-F]{2,6})\b')
     match_engine.add_matcher('Unicode Character',   r'\bunicode\((.)\)')
     match_engine.add_matcher('Airport',     r'\b([0-9A-Z]{3,4}(?:[.](?:IATA|FAA))?)\s[Aa]irport\b', flags=0)
-    match_engine.add_matcher('Assassin',    r'\bcombo\b', classes=['assassin'])
-    match_engine.add_matcher('Assassin',    r'\bcombination\b', classes=['assassin'])
-    match_engine.add_matcher('SCIENCE',     r'^science$', classes=['axs'])
+    match_engine.add_matcher('Assassin',    r'\b(combo)\b', classes=['assassin'])
+    match_engine.add_matcher('Assassin',    r'\b(combination)\b', classes=['assassin'])
+    match_engine.add_matcher('SCIENCE',     r'^(science)$', classes=['axs'])
     match_engine.add_matcher('Debothena Test', r'\bdebothena test[-\s:]*#([0-9]{1,5})\b')
 
     match_engine.add_trac('Django', 'https://code.djangoproject.com', classes=[])
