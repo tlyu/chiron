@@ -337,7 +337,7 @@ cc_re = re.compile(r"CC:(?P<recips>( [a-z./@]+)+) *$", re.MULTILINE)
 def format_tickets(last_seen, zgram, tickets):
     messages = []
     for tracker, fetcher, ticket, span in tickets:
-        print "Found ticket at %s on -c %s: %s, %s" % (datetime.datetime.now(), zgram.cls, tracker, ticket, )
+        print "  -> Found ticket: %s, %s" % (tracker, ticket, )
         old_enough = (last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout)
         if is_personal(zgram): # for personals, don't bother tracking age
             old_enough = True
@@ -402,6 +402,12 @@ def main(match_engine):
             continue
         if zgram.opcode.lower() == 'kill':
             sys.exit(0)
+
+        print '%s: -c %s -i "%s": %s -> %s' % (
+            datetime.datetime.now(),
+            zgram.cls, zgram.instance,
+            zgram.sender, zgram.recipient,
+        )
 
         # We have default fetchers for some classes. This adds two more ways
         # to trigger default fetchers behavior:
