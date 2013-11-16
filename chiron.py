@@ -367,7 +367,7 @@ def send_response(zgram, messages):
             cc_recips = cc.group('recips').split(' ')
             for cc_recip in cc_recips:
                 if cc_recip and 'chiron' not in cc_recip:
-                    recipients.add(add_default_realm(cc_recip.strip()))
+                    recipients.add(add_default_realm(str(cc_recip.strip())))
         if zgram.opcode == "":
             directed = True
         z.sender = zgram.recipient
