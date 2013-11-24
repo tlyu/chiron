@@ -2,6 +2,7 @@
 from optparse import OptionParser
 
 import chiron
+import chiron_zephyr
 
 def init_match_engine(classes=False, ):
     match_engine = chiron.MatchEngine()
@@ -63,7 +64,7 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('Pokedex',     r'#([0-9]{1,3})\b', classes=['lizdenys'])
     match_engine.add_matcher('MIT Class',   r'class\s([0-9a-z]{1,3}[.][0-9a-z]{1,4})\b')
     match_engine.add_matcher('MIT Class',   r"what's\s([0-9a-z]{1,3}[.][0-9a-z]{1,4})\?\b")
-    match_engine.add_matcher('MIT Class',   r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', cond=chiron.is_personal)
+    match_engine.add_matcher('MIT Class',   r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', cond=lambda m: m.is_personal())
     match_engine.add_matcher('Bible',       r'Bible\(([\w :-]+)\)')
     match_engine.add_matcher('XKCD',        r'\bxkcd[-\s:]#([0-9]{1,5})\b')
     match_engine.add_matcher('Unicode',     r'\bu\+([0-9a-fA-F]{2,6})\b')
@@ -100,4 +101,4 @@ def parse_args():
 if __name__ == '__main__':
     options, args = parse_args()
     match_engine = init_match_engine(classes=options.classes)
-    chiron.main(match_engine)
+    chiron_zephyr.main(match_engine)

@@ -10,40 +10,45 @@ from random import choice
 import os
 import json
 
-try:
-    import zephyr
-except ImportError:
-    import site
-    site.addsitedir('/mit/broder/lib/python%s/site-packages' % sys.version[:3])
-    import zephyr
-
+import zephyr
 
 seen_timeout = 5 * 60
 default_realm = 'ATHENA.MIT.EDU'
 parser = etree.HTMLParser(encoding='UTF-8')
 
-def zbody(zgram):
-    body = zgram.fields[1] if len(zgram.fields) > 1 else zgram.fields[0]
-    if type(body) != unicode:
-        body = body.decode('utf8')
-    return body
+class Message(object):
+    def log_arrival(self, ):
+        print '%s: -c %s -i "%s": %s -> %s' % (
+            datetime.datetime.now(),
+            self.cls(), self.instance(),
+            self.sender(), self.recipient(),
+        )
+
+    def body(self): raise NotImplementedError
+
+    def cls(self): raise NotImplementedError
+
+    def instance(self): return ""
+
+    def sender(self): raise NotImplementedError
+
+    def recipient(self): raise NotImplementedError
+
+    def context(self, ):
+        # We have default fetchers for some classes. This adds two more ways
+        # to trigger default fetchers behavior:
+        # - test classes (for easier testing of defaults)
+        # - instanced personals (to facilitate looking up many tickets for one project)
+        if "-test" in self.cls() or self.is_personal():
+            return self.instance()
+        else:
+            return self.cls()
 
 def build_matcher(regex, flags=0):
     r = re.compile(regex, flags)
-    def match(zgram):
-        return r.finditer(zbody(zgram))
+    def match(msg):
+        return r.finditer(msg.body())
     return match
-
-def instance_matcher(regex, flags=0):
-    r = re.compile(regex, flags)
-    def match(zgram):
-        if zgram.opcode.lower() == 'auto':
-            return []
-        return r.finditer(zgram.instance)
-    return match
-
-def is_personal(zgram):
-    return bool(zgram.recipient)
 
 
 #####################
@@ -264,6 +269,7 @@ class MatchEngine(object):
         self.classes = []
         self.fetchers = {}
         self.matchers = []
+        self.last_seen = {}
 
     def add_classes(self, classes):
         self.classes.extend(classes)
@@ -280,7 +286,7 @@ class MatchEngine(object):
         elif classes == True:
             cond = lambda m: True
         else:
-            cond = lambda m: (len([cls for cls in classes if cls in m.cls]) > 0)
+            cond = lambda m: (len([cls for cls in classes if cls in m.context()]) > 0)
         self.matchers.append((fetcher, [build_matcher(regexp, flags)], cond))
 
     def add_trac(self, name, url, classes=None):
@@ -294,12 +300,12 @@ class MatchEngine(object):
         # The "-Ubuntu" bit ignores any "uname -a" snippets that might get zephyred
         self.add_matcher(name, r'#([0-9]{2,5})\b(?!-Ubuntu)', classes=classes)
 
-    def find_ticket_info(self, zgram):
+    def find_ticket_info(self, msg):
         tickets = []
         for tracker, ms, cond in self.matchers:
-            if cond(zgram):
+            if cond(msg):
                 for m in ms:
-                    for match in m(zgram):
+                    for match in m(msg):
                         span = match.span()
                         if any(subspan(span, span1) for tracker1, fetcher1, t1, span1 in tickets):
                             continue
@@ -307,42 +313,20 @@ class MatchEngine(object):
                         tickets.append((tracker, self.fetchers[tracker], match.group(1), span))
         return tickets
 
+    def process(self, msg, ):
+        msg.log_arrival()
+        tickets = self.find_ticket_info(msg)
+        messages = format_tickets(self.last_seen, msg, tickets)
+        msg.send_reply(messages)
 
-#############
-# CORE CODE #
-#############
-
-def strip_default_realm(principal):
-    if '@' in principal:
-        user, domain = principal.split('@')
-        if domain == default_realm:
-            return user
-    return principal
-
-def add_default_realm(principal):
-    if '@' in principal:
-        return principal
-    else:
-        return "%s@%s" % (principal, default_realm, )
-
-def zephyr_setup(classes):
-    zephyr.init()
-    subs = zephyr.Subscriptions()
-    for c in classes:
-        subs.add((c, '*', '*'))
-    subs.add(('message', '*', '%me%'))
-
-cc_re = re.compile(r"CC:(?P<recips>( [a-z./@]+)+) *$", re.MULTILINE)
-
-def format_tickets(last_seen, zgram, tickets):
+def format_tickets(last_seen, msg, tickets):
     messages = []
     for tracker, fetcher, ticket, span in tickets:
         print "  -> Found ticket: %s, %s" % (tracker, ticket, )
-        old_enough = (last_seen.get((tracker, ticket, zgram.cls), 0) < time.time() - seen_timeout)
-        if is_personal(zgram): # for personals, don't bother tracking age
-            old_enough = True
-        if (zgram.opcode.lower() != 'auto' and old_enough):
-            if zgram.cls[:2] == 'un':
+        old_enough = (last_seen.get((tracker, ticket, msg.cls), 0) < time.time() - seen_timeout)
+        # for personals, don't bother tracking age
+        if old_enough or msg.is_personal():
+            if msg.cls()[:2] == 'un':
                 u, t = undebathena_fun()
             else:
                 u, t = fetcher(ticket)
@@ -350,81 +334,5 @@ def format_tickets(last_seen, zgram, tickets):
                 t = 'Unable to identify ticket %s' % ticket
             message = '%s ticket %s: %s' % (tracker, ticket, t)
             messages.append((message, u))
-            last_seen[(tracker, ticket, zgram.cls)] = time.time()
+            last_seen[(tracker, ticket, msg.cls)] = time.time()
     return messages
-
-def send_response(zgram, messages):
-    z = zephyr.ZNotice()
-    z.cls = zgram.cls
-    z.instance = zgram.instance
-    #z.format = "http://zephyr.1ts.org/wiki/df"
-    recipients = set()
-    directed = False
-    if is_personal(zgram):
-        recipients.add(zgram.sender)
-        cc = cc_re.match(zbody(zgram))
-        if cc:
-            cc_recips = cc.group('recips').split(' ')
-            for cc_recip in cc_recips:
-                if cc_recip and 'chiron' not in cc_recip:
-                    recipients.add(add_default_realm(str(cc_recip.strip())))
-        if zgram.opcode == "":
-            directed = True
-        z.sender = zgram.recipient
-    else:
-        recipients.add(zgram.recipient)
-    z.opcode = 'auto'
-    if len(messages) > 1:
-        body = '\n'.join(["%s (%s)" % (m, url) for m, url in messages])
-    elif len(messages) > 0:
-        body = '\n'.join([m for m, url in messages])
-    else:
-        url = "https://github.com/sipb/chiron"
-        body = "No ticket number found in message."
-    if len(recipients) > 1:
-        cc_line = " ".join([strip_default_realm(r) for r in recipients])
-        body = "CC: %s\n%s" % (cc_line, body)
-    z.fields = [url, body]
-    print '  -> Reply to: %s (original zephyr was to "%s")' % (recipients, zgram.recipient, )
-    if messages or directed:
-        for recipient in recipients:
-            z.recipient = recipient
-            z.send()
-
-def main(match_engine):
-    last_seen = {}
-    zephyr_setup(match_engine.classes)
-    print "Listening..."
-    while True:
-      try:
-        zgram = zephyr.receive(True)
-        if not zgram:
-            continue
-        if zgram.opcode.lower() == 'kill':
-            sys.exit(0)
-
-        print '%s: -c %s -i "%s": %s -> %s' % (
-            datetime.datetime.now(),
-            zgram.cls, zgram.instance,
-            zgram.sender, zgram.recipient,
-        )
-
-        # We have default fetchers for some classes. This adds two more ways
-        # to trigger default fetchers behavior:
-        # - test classes (for easier testing of defaults)
-        # - instanced personals (to facilitate looking up many tickets for one project)
-        #
-        # This is implemented by copying the instance to the class while
-        # processing matchers (and then undoing it), which is admittedly a bit
-        # hacky. :/
-        orig_class = False
-        if ("-test" in zgram.cls) or (is_personal(zgram) and zgram.instance != 'personal'):
-            orig_class = zgram.cls
-            zgram.cls = zgram.instance
-        tickets = match_engine.find_ticket_info(zgram)
-        messages = format_tickets(last_seen, zgram, tickets)
-        if orig_class:
-            zgram.cls = orig_class
-        send_response(zgram, messages)
-      except UnicodeDecodeError:
-        pass
