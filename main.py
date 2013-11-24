@@ -88,17 +88,27 @@ def add_default_matchers(match_engine):
     match_engine.add_trac('ASA', 'http://asa.mit.edu/trac', )
 
 def parse_args():
-    parser = OptionParser(usage='usage: %prog [--classes]')
+    parser = OptionParser(usage='usage: %prog [--classes] [--protocol=zephyr|zulip]')
     parser.add_option('-c', '--classes', dest='classes',
             default=False, action='store_true',
             help='Sub to classes',
     )
+    parser.add_option('-p', '--protocol', dest='protocol', default='zephyr', )
     (options, args) = parser.parse_args()
     if len(args) != 0:
         parser.error("got %d arguments; expected none" % (len(args), ))
+    if options.protocol not in ('zephyr', 'zulip'):
+        parser.error("the only supported protocols are zephyr and zulip; you requested %s" % (options.protocol, ))
     return options, args
 
 if __name__ == '__main__':
     options, args = parse_args()
     match_engine = init_match_engine(classes=options.classes)
-    chiron_zephyr.main(match_engine)
+
+    if options.protocol == 'zephyr':
+        import chiron_zephyr as chiron_protocol
+    elif options.protocol == 'zulip':
+        import chiron_zulip as chiron_protocol
+    else:
+        raise ValueError
+    chiron_protocol.main(match_engine)

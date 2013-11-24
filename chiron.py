@@ -34,6 +34,8 @@ class Message(object):
 
     def recipient(self): raise NotImplementedError
 
+    def is_personal(self): raise NotImplementedError
+
     def context(self, ):
         # We have default fetchers for some classes. This adds two more ways
         # to trigger default fetchers behavior:
@@ -43,6 +45,8 @@ class Message(object):
             return self.instance()
         else:
             return self.cls()
+
+    def send_reply(self, messages): raise NotImplementedError
 
 def build_matcher(regex, flags=0):
     r = re.compile(regex, flags)
