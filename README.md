@@ -7,6 +7,9 @@ and URL. Over time, the definition of "bugtracker" has broadened --- it
 includes actual bugtrackers like Debathena's, but also MIT class numbers and
 bible verses.
 
+It also now has experimental support for running as a
+[Zulip](https://zulip.com/) bot instead of a zephyrbot.
+
 Features
 --------
 
