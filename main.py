@@ -2,7 +2,6 @@
 from optparse import OptionParser
 
 import chiron
-import chiron_zephyr
 
 def init_match_engine(classes=False, ):
     match_engine = chiron.MatchEngine()

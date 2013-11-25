@@ -10,8 +10,6 @@ from random import choice
 import os
 import json
 
-import zephyr
-
 seen_timeout = 5 * 60
 default_realm = 'ATHENA.MIT.EDU'
 parser = etree.HTMLParser(encoding='UTF-8')
