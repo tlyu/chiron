@@ -31,7 +31,7 @@ keeping current tickets available.
 You can run it subbed to personals only with `./main.py`.
 
 Primary production deployment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------
 
 Alex Dehnert <adehnert> runs the primary Chiron instance, and is generally
 happy to add additional matchers, fetchers, or classes. To request changes,
@@ -40,7 +40,7 @@ Github](https://github.com/sipb/chiron/issues/), zephyr him, or send mail to
 chiron@mit.edu.
 
 Private deployments
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 If you want to run your own private production Chiron instance, you can also do
 that. By default, `main.py` will only sub to personals; when run with the
