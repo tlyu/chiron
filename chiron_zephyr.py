@@ -60,6 +60,8 @@ class ZephyrMessage(chiron.Message):
         z.cls = zgram.cls
         z.instance = zgram.instance
         #z.format = "http://zephyr.1ts.org/wiki/df"
+        # The following default format will cause messages not to be mirrored to MIT Zulip.
+        #z.format = "Zephyr error: See http://zephyr.1ts.org/wiki/df"
         recipients = set()
         if self.is_personal():
             recipients.add(zgram.sender)
