@@ -9,6 +9,8 @@ except ImportError:
     site.addsitedir('/mit/broder/lib/python%s/site-packages' % sys.version[:3])
     import zephyr
 
+default_realm = 'ATHENA.MIT.EDU'
+
 # Used for handling CC's
 def strip_default_realm(principal):
     if '@' in principal:
