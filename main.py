@@ -16,7 +16,7 @@ def add_default_classes(match_engine):
             'broder-test', 'geofft-test', 'adehnert-test',
             'linerva', 'debathena', 'undebathena', 'consult',
             'sipb', 'sipb-auto', 'scripts', 'barnowl', 'zephyr-dev', 'xvm',
-            'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya', 'kcr', 'jesus', 'nelhage', 'csvoss',
+            'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya', 'kcr', 'jesus', 'nelhage', 'csvoss', 'shulinye',
             'assassin',
             'shank',
             'remit', 'asa', 'esp',
