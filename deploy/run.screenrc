@@ -4,4 +4,4 @@ source ~/.screenrc
 
 zombie kr
 
-screen -t run /mit/chiron/chiron/deploy/run.sh
+screen -t run k5start -v -f $HOME/Private/daemon-chiron.keytab daemon/chiron.mit.edu -- /mit/chiron/chiron/deploy/run.sh
