@@ -11,6 +11,7 @@ PATH=/mit/chiron/cron_scripts:/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sb
 MAILTO="chiron@mit.edu"
 
 # Add your cron lines here:
+@reboot SHELL=/bin/bash screen -d -m -c ~/chiron/deploy/run.screenrc
 
 
 # Here's a reminder of the cron line format:
@@ -29,6 +30,5 @@ MAILTO="chiron@mit.edu"
 # (and this message would thus be e-mailed to the address above on each run) 
 
 # 0,20,40 8-17 * * 1-5 echo "Work harder!"
-@reboot SHELL=/bin/bash screen -d -m -c ~/cron_scripts/run.screenrc
 
 # See http://en.wikipedia.org/wiki/Cron (or google for crontab) for more info

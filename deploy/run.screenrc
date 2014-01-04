@@ -4,4 +4,4 @@ source ~/.screenrc
 
 zombie kr
 
-screen -t run /mit/chiron/cron_scripts/run.sh
+screen -t run /mit/chiron/chiron/deploy/run.sh
