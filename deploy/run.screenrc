@@ -1,0 +1,7 @@
+# run with screen -c run.screenrc
+
+source ~/.screenrc
+
+zombie kr
+
+screen -t run /mit/chiron/cron_scripts/run.sh
