@@ -53,3 +53,10 @@ only to personals. However, please ensure that if you run a Chiron instance
 that subs to non-personals, it listens on different classes and/or uses
 different matchers than the primary instance, so that users don't receive
 multiple replies to their zephyrs.
+
+Deploying on scripts
+--------------------
+
+The setup used for running the production instance on scripts.mit.edu is in the
+`deploy` directory. It may be a decent reference for deploying your own copy of
+Chiron or other similar zephyrbots.
