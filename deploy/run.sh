@@ -5,4 +5,5 @@ while true; do
     zwrite -c chiron -i prod -m "Starting chiron instance... (args: \"$@\")"
     ~/chiron/main.py "$@"
     zwrite -c chiron -i prod -m "Finished running chiron instance (args: \"$@\")."
+    sleep 60
 done
