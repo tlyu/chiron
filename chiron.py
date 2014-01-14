@@ -324,7 +324,7 @@ def format_tickets(last_seen, msg, tickets):
     messages = []
     for tracker, fetcher, ticket, span in tickets:
         print "  -> Found ticket: %s, %s" % (tracker, ticket, )
-        old_enough = (last_seen.get((tracker, ticket, msg.cls), 0) < time.time() - seen_timeout)
+        old_enough = (last_seen.get((tracker, ticket, msg.cls()), 0) < time.time() - seen_timeout)
         # for personals, don't bother tracking age
         if old_enough or msg.is_personal():
             if msg.cls()[:2] == 'un':
@@ -335,5 +335,5 @@ def format_tickets(last_seen, msg, tickets):
                 t = 'Unable to identify ticket %s' % ticket
             message = '%s ticket %s: %s' % (tracker, ticket, t)
             messages.append((message, u))
-            last_seen[(tracker, ticket, msg.cls)] = time.time()
+            last_seen[(tracker, ticket, msg.cls())] = time.time()
     return messages
