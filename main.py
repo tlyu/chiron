@@ -93,11 +93,14 @@ def parse_args():
             help='Sub to classes',
     )
     parser.add_option('-p', '--protocol', dest='protocol', default='zephyr', )
+    parser.add_option('--zulip-rc', dest='zuliprc', default=None)
     (options, args) = parser.parse_args()
     if len(args) != 0:
         parser.error("got %d arguments; expected none" % (len(args), ))
     if options.protocol not in ('zephyr', 'zulip'):
         parser.error("the only supported protocols are zephyr and zulip; you requested %s" % (options.protocol, ))
+    if options.zuliprc and options.protocol != 'zulip':
+        parser.error('Protocol must be "zulip" if --zulip-rc is provided.')
     return options, args
 
 if __name__ == '__main__':
@@ -110,4 +113,4 @@ if __name__ == '__main__':
         import chiron_zulip as chiron_protocol
     else:
         raise ValueError
-    chiron_protocol.main(match_engine)
+    chiron_protocol.main(match_engine, options)

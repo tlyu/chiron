@@ -51,8 +51,10 @@ def build_processor(match_engine, client):
     return process
 
 
-def main(match_engine):
-    client = zulip.Client()
+def main(match_engine, options):
+    # zuliprc defaults to None, as does config_file
+    # In both cases, this is interpreted as ~/.zuliprc
+    client = zulip.Client(config_file=options.zuliprc)
     print "Listening..."
     message_callback = build_processor(match_engine, client)
     client.call_on_each_message(message_callback)

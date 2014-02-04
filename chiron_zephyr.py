@@ -94,7 +94,7 @@ class ZephyrMessage(chiron.Message):
                 z.recipient = recipient
                 z.send()
 
-def main(match_engine):
+def main(match_engine, options):
     zephyr_setup(match_engine.classes)
     print "Listening..."
     while True:
