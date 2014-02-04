@@ -44,6 +44,7 @@ def add_default_fetchers(match_engine):
         'Assassin': chiron.deal_with_assassin,
         'SCIENCE': chiron.invoke_science,
         'Debothena Test': chiron.invoke_debothena,
+        'Puzzle Editing': chiron.fetch_github('mysteryhunt', 'puzzle-editing'),
         })
 
 def add_default_matchers(match_engine):
@@ -73,6 +74,7 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('Assassin',    r'\b(combination)\b', classes=['assassin'])
     match_engine.add_matcher('SCIENCE',     r'^(science)$', classes=['axs'])
     match_engine.add_matcher('Debothena Test', r'\bdebothena test[-\s:]*#([0-9]{1,5})\b')
+    match_engine.add_matcher('Puzzle Editing', r'\bpuzzle[ -]editing[-\s:]*#([0-9]{1,5})\b')
 
     match_engine.add_trac('Django', 'https://code.djangoproject.com', classes=[])
     match_engine.add_trac('Debathena', 'http://debathena.mit.edu/trac', classes=['debathena', 'jdreed', ])
