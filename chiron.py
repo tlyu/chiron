@@ -271,6 +271,7 @@ class MatchEngine(object):
         self.fetchers = {}
         self.matchers = []
         self.last_seen = {}
+        self.ignore_personals = False
 
     def add_classes(self, classes):
         self.classes.extend(classes)
@@ -316,6 +317,9 @@ class MatchEngine(object):
 
     def process(self, msg, ):
         msg.log_arrival()
+        if self.ignore_personals and msg.is_personal():
+            print "  -> ignoring personal"
+            return
         tickets = self.find_ticket_info(msg)
         messages = format_tickets(self.last_seen, msg, tickets)
         msg.send_reply(messages)

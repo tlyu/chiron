@@ -88,12 +88,17 @@ def add_default_matchers(match_engine):
 
 def parse_args():
     usage = ('usage: %prog'
+        + ' [--no-personals]'
         + ' [--protocol=zephyr|zulip]'
         + ' [--zulip-rc]'
         + ' [--default-classes]'
         + ' [--class=class ...]'
     )
     parser = OptionParser(usage=usage)
+    parser.add_option('--no-personals', dest='no_personals',
+        default=False, action='store_true',
+        help='Disable replying to personals',
+    )
     parser.add_option('-p', '--protocol', dest='protocol', default='zephyr', )
     parser.add_option('--zulip-rc', dest='zuliprc', default=None)
     parser.add_option('--default-classes', dest='default_classes',
@@ -119,6 +124,7 @@ def parse_args():
 def run_with_args(match_engine):
     options, args = parse_args()
 
+    match_engine.ignore_personals = options.no_personals
     if options.default_classes:
         add_default_classes(match_engine)
     if options.classes:
