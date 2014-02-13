@@ -106,18 +106,22 @@ class ZephyrMessage(chiron.Message):
         recipients = self._compute_recipients(z)
         self._send_zgrams(messages, z, recipients)
 
+    @classmethod
+    def main(cls, match_engine, options):
+        zephyr_setup(match_engine.classes)
+        print "Listening..."
+        while True:
+            zgram = zephyr.receive(True)
+            if not zgram:
+                continue
+            if zgram.opcode.lower() == 'kill':
+                print "Killing per request -- message:"
+                msg.log_arrival()
+                sys.exit(0)
+            if zgram.opcode.lower() in ('auto', 'ping'):
+                continue
+            msg = cls(zgram)
+            match_engine.process(msg)
+
 def main(match_engine, options):
-    zephyr_setup(match_engine.classes)
-    print "Listening..."
-    while True:
-        zgram = zephyr.receive(True)
-        if not zgram:
-            continue
-        if zgram.opcode.lower() == 'kill':
-            print "Killing per request -- message:"
-            msg.log_arrival()
-            sys.exit(0)
-        if zgram.opcode.lower() in ('auto', 'ping'):
-            continue
-        msg = ZephyrMessage(zgram)
-        match_engine.process(msg)
+    ZephyrMessage.main(match_engine, options)
