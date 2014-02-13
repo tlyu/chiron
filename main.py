@@ -91,6 +91,7 @@ def parse_args():
         + ' [--protocol=zephyr|zulip]'
         + ' [--zulip-rc]'
         + ' [--default-classes]'
+        + ' [--class=class ...]'
     )
     parser = OptionParser(usage=usage)
     parser.add_option('-p', '--protocol', dest='protocol', default='zephyr', )
@@ -99,6 +100,10 @@ def parse_args():
             default=False, action='store_true',
             help='Sub to a default set of classes',
     )
+    parser.add_option('-c', '--class', dest='classes',
+            default=[], action='append',
+            help='Sub to additional classes',
+    )
     (options, args) = parser.parse_args()
     if len(args) != 0:
         parser.error("got %d arguments; expected none" % (len(args), ))
@@ -106,8 +111,9 @@ def parse_args():
         parser.error("the only supported protocols are zephyr and zulip; you requested %s" % (options.protocol, ))
     if options.zuliprc and options.protocol != 'zulip':
         parser.error('Protocol must be "zulip" if --zulip-rc is provided.')
-    if options.default_classes and options.protocol != 'zephyr':
-        parser.error('Protocol must be "zephyr" if --default-classes is provided.')
+    if options.protocol != 'zephyr':
+        if options.default_classes or options.classes:
+            parser.error('Protocol must be "zephyr" if --default-classes or --class is provided.')
     return options, args
 
 def run_with_args(match_engine):
@@ -115,6 +121,8 @@ def run_with_args(match_engine):
 
     if options.default_classes:
         add_default_classes(match_engine)
+    if options.classes:
+        match_engine.add_classes(options.classes)
 
     if options.protocol == 'zephyr':
         import chiron_zephyr as chiron_protocol
