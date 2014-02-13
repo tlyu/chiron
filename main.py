@@ -87,13 +87,18 @@ def add_default_matchers(match_engine):
     match_engine.add_trac('ASA', 'http://asa.mit.edu/trac', )
 
 def parse_args():
-    parser = OptionParser(usage='usage: %prog [--default-classes] [--protocol=zephyr|zulip]')
+    usage = ('usage: %prog'
+        + ' [--protocol=zephyr|zulip]'
+        + ' [--zulip-rc]'
+        + ' [--default-classes]'
+    )
+    parser = OptionParser(usage=usage)
+    parser.add_option('-p', '--protocol', dest='protocol', default='zephyr', )
+    parser.add_option('--zulip-rc', dest='zuliprc', default=None)
     parser.add_option('--default-classes', dest='default_classes',
             default=False, action='store_true',
             help='Sub to a default set of classes',
     )
-    parser.add_option('-p', '--protocol', dest='protocol', default='zephyr', )
-    parser.add_option('--zulip-rc', dest='zuliprc', default=None)
     (options, args) = parser.parse_args()
     if len(args) != 0:
         parser.error("got %d arguments; expected none" % (len(args), ))
@@ -101,6 +106,8 @@ def parse_args():
         parser.error("the only supported protocols are zephyr and zulip; you requested %s" % (options.protocol, ))
     if options.zuliprc and options.protocol != 'zulip':
         parser.error('Protocol must be "zulip" if --zulip-rc is provided.')
+    if options.default_classes and options.protocol != 'zephyr':
+        parser.error('Protocol must be "zephyr" if --default-classes is provided.')
     return options, args
 
 def run_with_args(match_engine):
