@@ -47,7 +47,7 @@ Private deployments
 
 If you want to run your own private production Chiron instance, you can also do
 that. By default, `main.py` will only sub to personals; when run with the
-`--classes` option it will sub to a variety of additional classes. Feel free to
+`--default-classes` option it will sub to a variety of additional classes. Feel free to
 crib from `main.py` in setting up your own Chiron instance, or run it subbed
 only to personals. However, please ensure that if you run a Chiron instance
 that subs to non-personals, it listens on different classes and/or uses

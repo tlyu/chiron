@@ -87,10 +87,10 @@ def add_default_matchers(match_engine):
     match_engine.add_trac('ASA', 'http://asa.mit.edu/trac', )
 
 def parse_args():
-    parser = OptionParser(usage='usage: %prog [--classes] [--protocol=zephyr|zulip]')
-    parser.add_option('-c', '--classes', dest='classes',
+    parser = OptionParser(usage='usage: %prog [--default-classes] [--protocol=zephyr|zulip]')
+    parser.add_option('--default-classes', dest='default_classes',
             default=False, action='store_true',
-            help='Sub to classes',
+            help='Sub to a default set of classes',
     )
     parser.add_option('-p', '--protocol', dest='protocol', default='zephyr', )
     parser.add_option('--zulip-rc', dest='zuliprc', default=None)
@@ -106,7 +106,7 @@ def parse_args():
 def run_with_args(match_engine):
     options, args = parse_args()
 
-    if options.classes:
+    if options.default_classes:
         add_default_classes(match_engine)
 
     if options.protocol == 'zephyr':
