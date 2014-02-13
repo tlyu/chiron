@@ -56,7 +56,7 @@ class ZephyrMessage(chiron.Message):
     def is_personal(self):
         return bool(self._zgram.recipient)
 
-    def send_reply(self, messages):
+    def _prep_zgram(self):
         zgram = self._zgram
         z = zephyr.ZNotice()
         z.cls = zgram.cls
@@ -64,6 +64,11 @@ class ZephyrMessage(chiron.Message):
         #z.format = "http://zephyr.1ts.org/wiki/df"
         # The following default format will cause messages not to be mirrored to MIT Zulip.
         #z.format = "Zephyr error: See http://zephyr.1ts.org/wiki/df"
+        z.opcode = 'auto'
+        return z
+
+    def _compute_recipients(self, z):
+        zgram = self._zgram
         recipients = set()
         if self.is_personal():
             recipients.add(zgram.sender)
@@ -76,7 +81,9 @@ class ZephyrMessage(chiron.Message):
             z.sender = zgram.recipient
         else:
             recipients.add(zgram.recipient)
-        z.opcode = 'auto'
+        return recipients
+
+    def _send_zgrams(self, messages, z, recipients):
         if len(messages) > 1:
             body = '\n'.join(["%s (%s)" % (m, url) for m, url in messages])
         elif len(messages) > 0:
@@ -88,11 +95,16 @@ class ZephyrMessage(chiron.Message):
             cc_line = " ".join([strip_default_realm(r) for r in recipients])
             body = "CC: %s\n%s" % (cc_line, body)
         z.fields = [url, body]
-        print '  -> Reply to: %s (original message was to "%s")' % (recipients, zgram.recipient, )
+        print '  -> Reply to: %s (original message was to "%s")' % (recipients, self._zgram.recipient, )
         if messages or self.is_personal():
             for recipient in recipients:
                 z.recipient = recipient
                 z.send()
+
+    def send_reply(self, messages):
+        z = self._prep_zgram()
+        recipients = self._compute_recipients(z)
+        self._send_zgrams(messages, z, recipients)
 
 def main(match_engine, options):
     zephyr_setup(match_engine.classes)
