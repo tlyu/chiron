@@ -3,10 +3,8 @@ from optparse import OptionParser
 
 import chiron
 
-def init_match_engine(classes=False, ):
+def init_match_engine():
     match_engine = chiron.MatchEngine()
-    if classes:
-        add_default_classes(match_engine)
     add_default_fetchers(match_engine)
     add_default_matchers(match_engine)
     return match_engine
@@ -105,9 +103,11 @@ def parse_args():
         parser.error('Protocol must be "zulip" if --zulip-rc is provided.')
     return options, args
 
-if __name__ == '__main__':
+def run_with_args(match_engine):
     options, args = parse_args()
-    match_engine = init_match_engine(classes=options.classes)
+
+    if options.classes:
+        add_default_classes(match_engine)
 
     if options.protocol == 'zephyr':
         import chiron_zephyr as chiron_protocol
@@ -116,3 +116,7 @@ if __name__ == '__main__':
     else:
         raise ValueError
     chiron_protocol.main(match_engine, options)
+
+if __name__ == '__main__':
+    match_engine = init_match_engine()
+    run_with_args(match_engine)
