@@ -25,12 +25,21 @@ def add_default_realm(principal):
     else:
         return "%s@%s" % (principal, default_realm, )
 
-def zephyr_setup(classes):
+def zephyr_setup(classes, personals=True):
     zephyr.init()
     subs = zephyr.Subscriptions()
     for c in classes:
         subs.add((c, '*', '*'))
-    subs.add(('message', '*', '%me%'))
+    if personals:
+        subs.add(('message', '*', '%me%'))
+    else:
+        # The zephyrd's give you personals by default
+        # Unfortunately, the subscriptions object doesn't reflect this
+        # To get rid of them, explicitly *sub* (so the subscription object
+        # knows), and then unsub.
+        default_personals = ('message', 'personal', '%me%')
+        subs.add(default_personals)
+        subs.remove(default_personals)
 
 cc_re = re.compile(r"CC:(?P<recips>( [a-z./@]+)+) *$", re.MULTILINE)
 
@@ -108,7 +117,7 @@ class ZephyrMessage(chiron.Message):
 
     @classmethod
     def main(cls, match_engine, options):
-        zephyr_setup(match_engine.classes)
+        zephyr_setup(match_engine.classes, not match_engine.ignore_personals)
         print "Listening..."
         while True:
             zgram = zephyr.receive(True)
