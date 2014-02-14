@@ -95,6 +95,13 @@ def fetch_github(user, repo, ):
 
 # Project-specific fetchers
 
+def fetch_rfc(number):
+    u = "https://tools.ietf.org/html/rfc%s" % (number, )
+    f = urllib.urlopen(u)
+    t = etree.parse(f, parser)
+    title = t.xpath('string(//meta[@name="DC.Title"]/@content)')
+    return u, (title or None)
+
 fetch_cve_rhbz = fetch_bugzilla("https://bugzilla.redhat.com")
 def fetch_cve(ticket):
     # Try fetching from RHBZ first, since it tends to be better

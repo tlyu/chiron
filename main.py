@@ -22,6 +22,7 @@ def add_default_classes(match_engine):
 
 def add_default_fetchers(match_engine):
     match_engine.add_fetchers({
+        'RFC': chiron.fetch_rfc,
         'CVE': chiron.fetch_cve,
         'Launchpad': chiron.fetch_launchpad,
         'Debian': chiron.fetch_debbugs('http://bugs.debian.org'),
@@ -47,6 +48,7 @@ def add_default_fetchers(match_engine):
         })
 
 def add_default_matchers(match_engine):
+    match_engine.add_matcher('RFC',         r'\bRFC[-\s:]*#?([0-9]{2,5})\b')
     match_engine.add_matcher('CVE',         r'\b(CVE-[0-9]{4}-[0-9]{4})\b')
     match_engine.add_matcher('Launchpad',   r'\blp[-\s:]*#([0-9]{4,8})\b')
     match_engine.add_matcher('Debian',      r'\bdebian[-\s:]#([0-9]{4,6})\b')
