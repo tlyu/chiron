@@ -192,6 +192,8 @@ def fetch_whats(whats):
     f = urllib.urlopen(u)
     t = etree.parse(f, parser)
     title = t.xpath('string(//dl/dd)')
+    if title:
+        title = title.strip()
     return u, (title or None)
 
 def undebathena_fun():
