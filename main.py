@@ -36,6 +36,7 @@ def add_default_fetchers(match_engine):
         'ESP': chiron.fetch_github('learning-unlimited', 'ESP-Website'),
         'Pokedex': chiron.fetch_pokemon,
         'MIT Class': chiron.fetch_mit_class,
+        'whats': chiron.fetch_whats,
         'Bible': chiron.fetch_bible,
         'XKCD': chiron.fetch_xkcd,
         'Unicode': chiron.fetch_unicode,
@@ -67,6 +68,7 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('MIT Class',   r'class\s([0-9a-z]{1,3}[.][0-9a-z]{1,4})\b')
     match_engine.add_matcher('MIT Class',   r"what's\s([0-9a-z]{1,3}[.][0-9a-z]{1,4})\?\b")
     match_engine.add_matcher('MIT Class',   r'([0-9a-z]{1,3}[.][0-9]{1,4})\b', cond=lambda m: m.is_personal())
+    match_engine.add_matcher('whats',       r'whats ([0-9a-z,:;-]{2,10})\b')
     match_engine.add_matcher('Bible',       r'Bible\(([\w :-]+)\)')
     match_engine.add_matcher('XKCD',        r'\bxkcd[-\s:]#([0-9]{1,5})\b')
     match_engine.add_matcher('Unicode',     r'\bu\+([0-9a-fA-F]{2,6})\b')

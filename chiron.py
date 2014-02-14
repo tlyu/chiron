@@ -187,6 +187,13 @@ def fetch_mit_class(ticket):
     else:
         return u, None
 
+def fetch_whats(whats):
+    u = "http://stuff.mit.edu/cgi/whats.cgi?%s" % (whats, )
+    f = urllib.urlopen(u)
+    t = etree.parse(f, parser)
+    title = t.xpath('string(//dl/dd)')
+    return u, (title or None)
+
 def undebathena_fun():
     u = 'http://debathena.mit.edu/trac/wiki/PackageNamesWeDidntUse'
     f = urllib.urlopen(u)
