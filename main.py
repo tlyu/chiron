@@ -25,6 +25,7 @@ def add_default_fetchers(match_engine):
         'CVE': chiron.fetch_cve,
         'Launchpad': chiron.fetch_launchpad,
         'Debian': chiron.fetch_debbugs('http://bugs.debian.org'),
+        'DSA': chiron.fetch_dsa,
         'Chiron': chiron.fetch_github('sipb', 'chiron'),
         'zcommit': chiron.fetch_github('sipb', 'zcommit'),
         'RHBZ': chiron.fetch_bugzilla('https://bugzilla.redhat.com'),
@@ -49,6 +50,7 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('CVE',         r'\b(CVE-[0-9]{4}-[0-9]{4})\b')
     match_engine.add_matcher('Launchpad',   r'\blp[-\s:]*#([0-9]{4,8})\b')
     match_engine.add_matcher('Debian',      r'\bdebian[-\s:]#([0-9]{4,6})\b')
+    match_engine.add_matcher('DSA',         r'\b(DSA-[0-9-]{4,10})\b')
     match_engine.add_matcher('Chiron',      r'\bchiron[-\s:]*#([0-9]{1,5})\b')
     match_engine.add_matcher('zcommit',     r'\bzcommit[-\s:]*#([0-9]{1,5})\b')
     match_engine.add_matcher('RHBZ',        r'\bRHBZ[-\s:]#([0-9]{4,7})\b')

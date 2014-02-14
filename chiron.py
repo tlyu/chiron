@@ -143,6 +143,20 @@ def fetch_debbugs(url):
             return u, None
     return debbugs_fetcher
 
+def fetch_dsa(number):
+    tu = "https://security-tracker.debian.org/tracker/%s" % (number, )
+    tf = urllib.urlopen(tu)
+    tt = etree.parse(tf, parser)
+    dsa_urls = tt.xpath('//a[text()="Debian"]/@href[starts-with(.,"http://www.debian.org/security/")]')
+    title = tt.xpath('string(//tr[td/b="Description"]/td[2])') or None
+    print "    -> DSA URLs in page: %s" % (dsa_urls, )
+    if dsa_urls:
+        dsa_url = dsa_urls[0]
+    else:
+        dsa_url = tu
+    return dsa_url, title
+
+
 def fetch_pokemon(ticket):
     u = 'http://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number'
     f = urllib.urlopen(u + '?action=raw')
