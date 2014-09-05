@@ -9,6 +9,7 @@ import sys
 from random import choice
 import os
 import json
+import csv
 
 seen_timeout = 5 * 60
 parser = etree.HTMLParser(encoding='UTF-8')
@@ -73,11 +74,10 @@ def fetch_bugzilla(url):
 def fetch_trac(url):
     def trac_fetcher(ticket):
         u = '%s/ticket/%s' % (url, ticket)
-        f = urllib.urlopen(u)
-        t = etree.parse(f, parser)
-        title = t.xpath('string(//h2[@class])')
-        if title:
-            return u, title
+        f = urllib.urlopen(u + '?format=csv')
+        if f.getcode() == 200:
+            d = dict(zip(*csv.reader(f)))
+            return u, d['summary']
         else:
             return u, None
     return trac_fetcher
