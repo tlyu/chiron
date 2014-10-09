@@ -77,7 +77,7 @@ def fetch_trac(url):
         f = urllib.urlopen(u + '?format=csv')
         if f.getcode() == 200:
             d = dict(zip(*csv.reader(f)))
-            return u, d['summary']
+            return u, unicode(d['summary'], 'utf-8')
         else:
             return u, None
     return trac_fetcher
