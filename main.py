@@ -13,7 +13,7 @@ def add_default_classes(match_engine):
     match_engine.add_classes([
             'broder-test', 'geofft-test', 'adehnert-test',
             'linerva', 'debathena', 'undebathena', 'consult',
-            'sipb', 'sipb-auto', 'scripts', 'barnowl', 'zephyr-dev', 'xvm',
+            'sipb', 'sipb-auto', 'scripts', 'barnowl', 'zephyr-dev', 'xvm', 'chiron',
             'geofft', 'lizdenys', 'jdreed', 'axs', 'adehnert', 'achernya', 'kcr', 'jesus', 'nelhage', 'csvoss', 'shulinye',
             'assassin',
             'shank',
