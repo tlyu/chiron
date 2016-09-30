@@ -52,6 +52,8 @@ def add_default_matchers(match_engine):
     match_engine.add_matcher('RFC',         r'\bRFC[-\s:]*#?([0-9]{2,5})\b')
     match_engine.add_matcher('CVE',         r'\b(CVE-[0-9]{4}-[0-9]{4,7})\b')
     match_engine.add_matcher('Launchpad',   r'\blp[-\s:]*#([0-9]{4,8})\b')
+    match_engine.add_matcher('Launchpad',   r'\blaunchpad[-\s:]*#([0-9]{4,8})\b')
+    match_engine.add_matcher('Launchpad',   r'\bubuntu[-\s:]*#([0-9]{4,8})\b')
     match_engine.add_matcher('Debian',      r'\bdebian[-\s:]#([0-9]{4,6})\b')
     match_engine.add_matcher('DSA',         r'\b(DSA-[0-9-]{4,10})\b')
     match_engine.add_matcher('Chiron',      r'\bchiron[-\s:]*#([0-9]{1,5})\b')
